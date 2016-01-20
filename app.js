@@ -1,3 +1,5 @@
+'use strict'
+
 require('dotenv').load(); //load global variables from .env
 
 var express = require('express');

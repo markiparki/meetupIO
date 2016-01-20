@@ -18,8 +18,8 @@
     		<p> Location: <%= events[event].loc %> </p>
     		<p> <%= events[event].body %> </p>
     		<p> Created by 
-    			<a href="/user/<%= events[event].created_by.id %>">  
-    				<%= events[event].created_by.name.full %> </p>
+    			<a href="/user/<%= events[event].createdBy.id %>">  
+    				<%= events[event].createdBy.name.full %> </p>
     			</a>
     	<% } %>
 

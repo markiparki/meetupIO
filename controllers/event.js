@@ -1,3 +1,5 @@
+'use strict'
+
 var express = require('express');
 var router = express.Router();
 
@@ -36,7 +38,8 @@ module.exports = function() {
 			var newEvent = new Event();
 			newEvent.title = req.body.title;
 			newEvent.body = req.body.body;
-			newEvent.created_by = req.user._id;
+			newEvent.date = req.body.date;
+			newEvent.createdBy = req.user._id;
 			newEvent.loc = [13.341850, 52.555550]; //TODO: dummy lng lat
 			newEvent.save(function(err, newEvent) {
 				if (err){
@@ -46,13 +49,14 @@ module.exports = function() {
 			});
 		})
 
-	//event-specific commands. likely won't be used
 	router.route('/:id')
 		//gets specified event
 		.get(function(req, res){
-			Event.findById(req.params.id, function(err, event){
+			// Event.findById(req.params.id, function(err, event){
+			Event.findById(req.params.id).populate('created_by').exec(function(err, event){ //TODO: .populate needed?
 				if(err)
 					res.send(err);
+
 				req.params.id = event.id
 				res.json(event);
 			});
@@ -85,8 +89,8 @@ module.exports = function() {
 			});
 		});
 
-		// MIDDLEWARE ===================================
-		//TODO: MAKE BETTER!
+	// MIDDLEWARE ===================================
+	//TODO: MAKE BETTER!
     function isLoggedIn(req, res, next) {
         if (req.isAuthenticated())
             return next();

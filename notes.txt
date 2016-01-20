@@ -1,0 +1,4 @@
+20.01.16
+	- facebook profile.data to db needed? data redundant!
+	- post new event to facebook user-stream: scope: ['read_stream', 'publish_actions']
+	- 

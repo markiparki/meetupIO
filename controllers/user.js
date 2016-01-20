@@ -1,3 +1,5 @@
+'use strict'
+
 var express = require('express');
 var router = express.Router();
 
@@ -69,8 +71,8 @@ module.exports = function() {
                     req.flash('message', 'No user found');
                     res.redirect('/user/home');
                 } else {
-                    res.render('user/profile', {user: user});
-                    // res.json(user);
+                    // res.render('user/profile', {user: user});
+                    res.json(user);
                 }
             });
         });

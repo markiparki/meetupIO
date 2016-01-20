@@ -1,4 +1,4 @@
-// copied from scotch.io
+'use strict'
 
 // load the things we need
 var mongoose = require('mongoose');
@@ -19,7 +19,7 @@ var userSchema = mongoose.Schema({
         id : String,
         link : String
     },
-    created: { type: Date, default: Date.now }, //TODO: rename!
+    createdAt: { type: Date, default: Date.now }, //TODO: rename!
     isActive: { type: Boolean, default: true },
     isAdmin: { type: Boolean, default: false}
 

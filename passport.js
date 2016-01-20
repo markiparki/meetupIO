@@ -1,4 +1,8 @@
+'use strict'
+
 //TODO: clean comments!
+// facebook daten direkt!
+// App Settings: https://developers.facebook.com/apps/151583945205925/
 var FacebookStrategy = require('passport-facebook').Strategy;
 var User = require('./models/user');
 
@@ -55,7 +59,7 @@ module.exports = function(passport) {
                     }); 
                 // no user found with facebook.id, create new user
                 } else {
-                   var newUser = new User();
+                    var newUser = new User();
                     newUser.facebook.id = profile._json.id;
                     newUser.email = profile._json.email;
                     // TODO: change picture size
