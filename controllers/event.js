@@ -13,9 +13,7 @@ module.exports = function() {
 
     router.route('/')
         .get(function(req, res){
-			console.log('debug1');
-			Event.find().populate('created_by').exec(function(err, events){
-				console.log('debug2');
+			Event.find().populate('createdBy').exec(function(err, events){
 				if(err){
 					return res.send(500, err);
 				}
@@ -40,7 +38,7 @@ module.exports = function() {
 			newEvent.body = req.body.body;
 			newEvent.date = req.body.date;
 			newEvent.createdBy = req.user._id;
-			newEvent.loc = [13.341850, 52.555550]; //TODO: dummy lng lat
+			newEvent.loc = [req.body.lng, req.body.lat]; //TODO: dummy lng lat
 			newEvent.save(function(err, newEvent) {
 				if (err){
 					return res.send(500, err);
@@ -53,7 +51,7 @@ module.exports = function() {
 		//gets specified event
 		.get(function(req, res){
 			// Event.findById(req.params.id, function(err, event){
-			Event.findById(req.params.id).populate('created_by').exec(function(err, event){ //TODO: .populate needed?
+			Event.findById(req.params.id).populate('createdBy').exec(function(err, event){ //TODO: .populate needed?
 				if(err)
 					res.send(err);
 
@@ -67,8 +65,10 @@ module.exports = function() {
 				if(err)
 					res.send(err);
 
-				event.author = req.body.author;
-				event.text = req.body.text;
+				event.title = req.body.title;
+				event.body = req.body.body;
+				event.date = req.body.date;
+				event.loc = [req.body.lng, req.body.lat]; //TODO: dummy lng lat
 
 				event.save(function(err, event){
 					if(err)
