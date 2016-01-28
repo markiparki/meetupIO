@@ -5,32 +5,48 @@ var Schema = mongoose.Schema;
 
 // TODO: Comments in Event -> http://mongoosejs.com/docs/2.7.x/docs/embedded-documents.html
 var commentSchema = mongoose.Schema({
-    body: String,
-    created_by: {
+    body: {
+        type: String, 
+        required: true
+    },
+    createdBy: {
         type: Schema.ObjectId,
         ref: 'User',
         required: true
     },
-    created_at: { type: Date, default: Date.now }
+    createdAt: {
+        type: Date, 
+        default: Date.now
+    }
 })
 
 var eventSchema = mongoose.Schema({
-
-    title: String, // event title
-    body: String, // description
+    title: {
+        type: String, 
+        required: true
+    },
+    body: {
+        type: String, 
+        required: true
+    },
     date: Date, // start date
-    createdBy: { type: Schema.ObjectId, ref: 'User', required: true },
+    createdBy: { 
+        type: Schema.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
     loc: {
         type: [Number],  // [<longitude>, <latitude>]
         index: '2d'      // create the geospatial index
     },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { 
+        type: Date, 
+        default: Date.now 
+    },
+    updatedAt: Date,
     comments: [commentSchema],
-    participants: [{ type: Schema.ObjectId, ref: 'User' }],
-    //TODO: time, participants, (watchers)
+    participants: [{ type: Schema.ObjectId, ref: 'User' }]
+    //TODO: watchers?
 });
 
-
-
-// create the model for users and expose it to our app
 module.exports = mongoose.model('Event', eventSchema);

@@ -12,93 +12,156 @@ module.exports = function() {
     router.all('*', isLoggedIn);
 
     router.route('/')
-        .get(function(req, res){
-			Event.find().populate('createdBy').exec(function(err, events){
-				if(err){
-					return res.send(500, err);
-				}
-				// return res.send(200,events);
-				return res.render('event/index', {events: events});
+    	// sends all events
+        .get(function(req, res, next){
+			Event.find().populate('createdBy', 'id username picture').exec(function(err, events){
+				if(err) 
+					return next(err);
+				
+				res.json(events);
+			});
+		})
+
+		// creates a new event
+		.post(function(req, res, next){
+			var event = new Event();
+			event.title = req.body.title;
+			event.body = req.body.body;
+			event.createdBy = req.user.id;
+			// event.date = req.body.date;
+			event.date = '2016-01-25T16:54:13.252Z';
+			// event.loc = [req.body.lng, req.body.lat];
+			event.loc = [23.45345, 56.34532]; //TODO: dummy lng 
+
+			event.save(function(err, event) {
+				if (err) 
+					return next(err);
+
+				res.json(event);
 			});
 		});
 
-	router.route('/add')
-		.get(function(req, res){
-			// return res.send(200,events);
-			res.render('event/add', {
-            user : req.user,
-            message: req.flash('message')
-            });
-		})
-		//creates a new event
-		.post(function(req, res){
-
-			var newEvent = new Event();
-			newEvent.title = req.body.title;
-			newEvent.body = req.body.body;
-			newEvent.date = req.body.date;
-			newEvent.createdBy = req.user._id;
-			newEvent.loc = [req.body.lng, req.body.lat]; //TODO: dummy lng lat
-			newEvent.save(function(err, newEvent) {
-				if (err){
-					return res.send(500, err);
-				}
-				return res.redirect('/event/' + newEvent.id);
-			});
-		})
-
 	router.route('/:id')
-		//gets specified event
-		.get(function(req, res){
-			// Event.findById(req.params.id, function(err, event){
-			Event.findById(req.params.id).populate('createdBy').exec(function(err, event){ //TODO: .populate needed?
-				if(err)
-					res.send(err);
-
-				req.params.id = event.id
+		// gets event by event.id
+		.get(function(req, res, next){
+			Event.findById(req.params.id).populate('createdBy', 'id username picture').exec(function(err, event){
+				if(err || !event) 
+					return next(err);
+				
 				res.json(event);
 			});
 		}) 
-		//updates specified event
-		.put(function(req, res){
+
+		// updates your events by event.id
+		.put(function(req, res, next){
 			Event.findById(req.params.id, function(err, event){
-				if(err)
-					res.send(err);
+				if(err) 
+					return next(err);
 
-				event.title = req.body.title;
-				event.body = req.body.body;
-				event.date = req.body.date;
-				event.loc = [req.body.lng, req.body.lat]; //TODO: dummy lng lat
+				if(event.createdBy === req.user.id){
+				
+					event.title = req.body.title;
+					event.body = req.body.body;
+					// event.date = req.body.date;
+					event.date = '2016-01-25T16:54:13.252Z';
+					// event.loc = [req.body.lng, req.body.lat];
+					event.loc = [23.45345, 56.34532]; //TODO: dummy lng 
+					event.updatedAt = Date.now();
 
-				event.save(function(err, event){
-					if(err)
-						res.send(err);
+					event.save(function(err, event){
+						if(err) return next(err);
 
-					res.json(event);
-				});
+						res.json(event);
+					});
+				} else {
+					//TODO: send right message to angular
+					res.json("not your event! " + event.createdBy + " != " + req.user.id);
+				}	
 			});
 		})
-		//deletes the event
-		.delete(function(req, res) {
-			Event.remove({
-				_id: req.params.id
-			}, function(err) {
-				if (err)
-					res.send(err);
-				res.json("deleted :(");
+
+		// deletes your events by event.id
+		.delete(function(req, res, next) {
+			Event.findById(req.params.id, function(err, event){
+				if(err) 
+					return next(err);
+
+				if(event.createdBy === req.user.id){
+					Event.remove({
+						_id: req.params.id
+					}, function(err) {
+						if (err) 
+							return next(err);
+
+						res.json("Event deleted");
+					});
+				} else {
+					//TODO: send right message to angular
+					res.json("not your event!");
+				}
 			});
+		});
+
+	router.route('/:id/comment')
+		// adds comment to event
+		.put(function(req, res, next){
+			Event.findById(req.params.id, function(err, event){
+				if(err) 
+					return next(err);
+
+				event.comments.push({body: req.body.body, createdBy: req.user.id});
+				event.save(function(err){
+					if(err) 
+						return next(err);
+
+					res.json("comment added");
+				});
+			});
+		});
+
+	//TODO: if(already joined) res.json("already joined event")
+	router.route('/:id/join')
+		//joins user to event
+		.get(function(req, res, next){
+			Event.findByIdAndUpdate(
+		        req.params.id,
+		        {$addToSet: {"participants": req.user.id}},
+		        {safe: true, new : true},
+		        function(err) {
+		        	if (err) 
+		        		return next(err);
+
+		            res.json("event joined");
+		        }
+		    );
+		});
+
+	router.route('/:id/leave')
+		//user leaves event
+		.get(function(req, res, next){
+			Event.findByIdAndUpdate(
+		        req.params.id,
+		        {$pull: {"participants": req.user.id}},
+		        {safe: true, new : true},
+		        function(err) {
+		        	if (err) 
+		        		return next(err);
+
+		            res.json("event leave");
+		        }
+		    );
 		});
 
 	// MIDDLEWARE ===================================
 	//TODO: MAKE BETTER!
-    function isLoggedIn(req, res, next) {
+    function isLoggedIn(req, res, next){
         if (req.isAuthenticated())
             return next();
         else
         	console.log('-- You must be logged in to do that.');
             req.flash('message', 'You must be logged in to do that.');
             res.redirect('/');
-    }
+    };
     // ===============================================
 
     return router;

@@ -12,11 +12,10 @@ module.exports = function(passport) {
     router.use('/user', require('./user')(passport));
     router.use('/event', require('./event')(passport));
 
-    // ROUTES
-    // index
     router.route('/')
-        .get(function (req, res) {
-            res.render('index', {message: req.flash('message')});
+        // renders index.ejs as a starting point
+        .get(function (req, res, next) {
+            res.render('index', { title: "meetupIO"});
         });
 
     return router;

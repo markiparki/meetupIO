@@ -5,7 +5,6 @@ var router = express.Router();
 
 module.exports = function(passport){
 
-/**
 	//sends successful login state back to angular
 	router.get('/success', function(req, res){
 		res.send({state: 'success', user: req.user ? req.user : null});
@@ -13,28 +12,8 @@ module.exports = function(passport){
 
 	//sends failure login state back to angular
 	router.get('/failure', function(req, res){
-		res.send({state: 'failure', user: null, message: "Invalid username or password"});
+		res.send({state: 'failure', user: null, message: "facebook authorization failed"});
 	});
-
-	//log in
-	router.post('/login', passport.authenticate('login', {
-		successRedirect: '/auth/success',
-		failureRedirect: '/auth/failure'
-	}));
-
-	//sign up
-	router.post('/signup', passport.authenticate('signup', {
-		successRedirect: '/auth/success',
-		failureRedirect: '/auth/failure'
-	}));
-
-	//log out
-	router.get('/signout', function(req, res) {
-		req.logout();
-		res.redirect('/');
-	});
-
-**/
   
   
     // facebook login
@@ -46,8 +25,8 @@ module.exports = function(passport){
     router.route('/facebook/callback')
         .get(
             passport.authenticate('facebook', {
-                successRedirect : '/user/home',
-                failureRedirect : '/login'
+            	successRedirect: '/auth/success',
+				failureRedirect: '/auth/failure'
         }));
 
     // /logout
@@ -58,5 +37,4 @@ module.exports = function(passport){
         });
 
 	return router;
-
 }

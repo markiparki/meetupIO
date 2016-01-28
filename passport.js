@@ -43,9 +43,7 @@ module.exports = function(passport) {
                     console.log("-- User logged in: " + user.id); 
 
                     user.email = profile._json.email;
-                    // TODO: change picture size
                     user.picture = "https://graph.facebook.com/" + profile.id + "/picture" + "?width=300&height=300" + "&access_token=" + token;
-                    user.name.full = profile._json.name;
                     user.name.first = profile._json.first_name;
                     user.name.last = profile._json.last_name;
                     user.gender = profile._json.gender;
@@ -59,14 +57,15 @@ module.exports = function(passport) {
                     }); 
                 // no user found with facebook.id, create new user
                 } else {
+
                     var newUser = new User();
                     newUser.facebook.id = profile._json.id;
                     newUser.email = profile._json.email;
                     // TODO: change picture size
                     newUser.picture = "https://graph.facebook.com/" + profile.id + "/picture" + "?width=300&height=300" + "&access_token=" + token;
-                    newUser.name.full = profile._json.name;
                     newUser.name.first = profile._json.first_name;
                     newUser.name.last = profile._json.last_name;
+                    newUser.username = profile._json.first_name + ' ' + profile._json.last_name.slice(0, 1) + '.'; //TODO: rework!
                     newUser.gender = profile._json.gender;
                     newUser.facebook.link = profile._json.link;
 

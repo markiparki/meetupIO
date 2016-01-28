@@ -1,4 +1,20 @@
 20.01.16
-	- facebook profile.data to db needed? data redundant!
+	- QUESTION: facebook profile.data to db needed? data redundant!
 	- post new event to facebook user-stream: scope: ['read_stream', 'publish_actions']
-	- TODO: Event participants, watchers, COMMENTS
+	*- TODO: Event participants, watchers, COMMENTS
+
+	22.01.16
+	*- isLoggedIn turned off in events for testing
+	- USER CONTROLLER: 
+		- check error handling!
+		*- findById with .select('_id alias picture gender etc') to not send all user data!
+		- if (own profile) return all data
+		- rewrite router.route('/profile') with put like in event
+	?- TODO passport: rewrite user auth
+
+27.01.16
+	-QUESTION: When to POST or PUT
+
+28.01.16
+	- /:id/join: put stuff in arrays -> http://www.jonahnisenson.com/tips-on-working-with-embedded-arrays-in-mongoosemongo/
+	- TODO: add/delete follow-user

@@ -1,29 +1,42 @@
 'use strict'
 
-// load the things we need
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema; // for referencing to other object schemas
 
-// define the schema for our user model
 var userSchema = mongoose.Schema({
 
     email: String,
     name: {
-        username: { type: String},
-        full: String,
         first: String,
-        last: { type: String, trim: true },        
+        last: { 
+            type: String, 
+            trim: true 
+        }        
     },
-    gender: { type: String, enum: ['male', 'female', 'undefined'] }, //TODO: read about enums!
-    picture: { type: String },
+    username: {
+        type: String, 
+        required: true 
+    },
+    gender: String,
+    picture: String,
+    about: String,
     facebook: {
         id : String,
         link : String
     },
-    createdAt: { type: Date, default: Date.now }, //TODO: rename!
-    isActive: { type: Boolean, default: true },
-    isAdmin: { type: Boolean, default: false}
-
+    createdAt: { 
+        type: Date, 
+        default: Date.now 
+    },
+    isActive: { 
+        type: Boolean, 
+        default: true 
+    },
+    isAdmin: { 
+        type: Boolean, 
+        default: false
+    }, 
+    follows: [{type: Schema.ObjectId, ref: 'User'}]
 });
 
-// create the model for users and expose it to our app
 module.exports = mongoose.model('User', userSchema);

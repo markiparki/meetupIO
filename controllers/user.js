@@ -10,69 +10,42 @@ module.exports = function() {
     // checks Authentication for all routes in this controller
     router.all('*', isLoggedIn);
 
-    // /user/home
-    router.route('/home')
-        .get(function(req, res) {
-            res.render('user/home', {
-                user : req.user,
-                message: req.flash('message')
-            });
-        });
-
-    // /user/profile
     router.route('/profile')
+        // gets users profile
         .get(function(req, res) {
-            res.render('user/profile', {
-                user : req.user
-            });
-            // res.json(req.user);
-        });
-
-    // /user/profile/edit
-    router.route('/profile/edit')
-        .get(function(req, res) {
-            res.render('user/edit', {
-                user : req.user
-            });
+            res.json(req.user);
         })
-        // saving new user data: http://stackoverflow.com/a/24498660/4341770
-        .post(function(req, res) {
-            var user = req.user;
-  
-            user.name.first = req.body.first;
-            user.name.last = req.body.last;
-            user.gender = req.body.gender;
 
-            user.save(function(err) {
-                if (err) {
-                    return res.error(err);
-                } else {
-                    req.login(user, function(err) {
-                        if (err) {
-                            return res.error(err);
-                        } else {
-                            res.redirect('/user/profile');
-                        }
-                    })
-                }
-            })
+        //updates user profile and returns user's data
+        .put(function(req, res, next){
+            var user = req.user;
+
+            user.username = req.body.username;
+            user.about = req.body.about;
+
+            user.save(function(err, user){
+                if(err)
+                    return next(err);
+
+                res.json(user);
+            });
         });
 
 
     //TODO: make better user search!!!
-    // /user/id
     router.route('/:id')
-        .get(function(req, res) {
-            User.findById(req.params.id).exec(function(err, user) {
-                if (err) {
-                    req.flash('message', 'Invalid ID');
-                    res.redirect('/user/home');
-                } if (!user) {
-                    req.flash('message', 'No user found');
-                    res.redirect('/user/home');
+        // gets user by id
+        .get(function(req, res, next) {
+            User.findById(req.params.id).select('id username about gender picture friends').exec(function(err, user) {
+
+                if (err || !user) {
+                    return next(err);
                 } else {
-                    // res.render('user/profile', {user: user});
-                    res.json(user);
+                    if (user.id === req.user.id){
+                        return res.redirect('/user/profile');
+                    } else {
+                        return res.json(user);
+                    }
                 }
             });
         });
@@ -88,6 +61,5 @@ module.exports = function() {
             res.redirect('/');
     }
     // ===============================================
-
     return router;
 };
