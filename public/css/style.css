@@ -1,0 +1,30 @@
+body {
+	padding-top:50px;
+}
+
+a {
+	color: #00B7FF;
+}
+
+.eventFeed {
+	cursor: pointer;
+	display: block;
+	padding: 10px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+}
+
+.odd {
+	background-color: #f2f9ff;
+	
+}
+.even {
+	background-color: #eceff3;
+}
+
+
+
+.navbar-nav>li>a.profile-img {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

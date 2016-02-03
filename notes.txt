@@ -18,3 +18,14 @@
 28.01.16
 	- /:id/join: put stuff in arrays -> http://www.jonahnisenson.com/tips-on-working-with-embedded-arrays-in-mongoosemongo/
 	- TODO: add/delete follow-user
+
+01.02.16
+	- MVP und weitere features an Strippgen
+	- HHTPS! https://github.com/DylanPiercey/auto-sni
+	- Verteidigung mit Präsentation! 20 min Folien, 30-45 min Fragen 
+
+03.02.16
+	-show fb events via graph api?
+	- req.user to client: 2 views ($http.get/api/user/profile after logged in), via window.user (npm express-expose)
+		- http://stackoverflow.com/questions/24341617/pushing-user-data-from-nodejs-server-to-angular-after-successful-login
+	- remove # in url: https://scotch.io/quick-tips/pretty-urls-in-angularjs-removing-the-hashtag
