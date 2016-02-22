@@ -1,9 +1,19 @@
-<html>
+<html lang="en">
 	<head>
-		<title><%= title %></title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <meta name="description" content="">
+	    <meta name="author" content="">
+
+	    <title><%= title %></title>
+
+	    <link rel="stylesheet" href="css/normalize.css">
+		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/style.css">
+		
 	</head>
+
 	<body ng-app="angularApp" ng-controller="initController">
 		<div id='main' class="container">
 
@@ -16,22 +26,22 @@
 		            <span class="icon-bar"></span>
 		            <span class="icon-bar"></span>
 		          </button>
-		          <a class="navbar-brand" href="/">meetupIO</a>
+		          <a class="navbar-brand" href="#/">meetupIO</a>
 		        </div>
 		        <div id="navbar" class="collapse navbar-collapse">
 		          <ul class="nav navbar-nav navbar-right">
-		            <li><a href="#/events">Events</a></li>
+		            <li><a href="#/event">Events</a></li>
 		            <li><a href="#/user/profile">
 		            	<img ng-src="{{currentUser.picture}}" class="img-circle" width="18" height="18"> {{currentUser.username}}
 		            </a></li>
 		            <li class="dropdown"><!-- TODO: dropdown -->
-					    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+					    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 					    	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 					    	<span class="caret"></span>
 					    </a>
 					    <ul class="dropdown-menu">
 					    	<li><a href="#/user/profile">Profile</a></li>
-					    	<li><a href="#">Settings</a></li>
+					    	<li><a href="">Settings</a></li>
 					    	<li role="separator" class="divider"></li>
 					    	<li><a href="auth/logout" ng-click="logout()">Logout</a></li>
 					    </ul>
@@ -40,35 +50,28 @@
 		        </div><!--/.nav-collapse -->
 		      </div>
 		    </nav>
-
-			<div class="col-md-offset-2 col-md-8">
-				<div ng-view>
-				</div>
+			<div class="col-md-offset-2 col-md-8" ng-view>
+				<!-- views get loaded here! -->
 			</div>
 		</div>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-route.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-resource.min.js"></script>
+		<!-- facebook API _=_ bug-fix (http://stackoverflow.com/a/18305085/4341770) -->
+		<script type="text/javascript">
+		    if (window.location.hash && window.location.hash == '#_=_') {
+		        window.location.hash = '';
+		    }
+		</script>
+		<script src="bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="bower_components/angular/angular.min.js"></script>
+		<script src="bower_components/angular-route/angular-route.min.js"></script>
+		<script src="bower_components/angular-resource/angular-resource.min.js"></script>
 		<script src="js/angularApp.js"></script>
+		<script src="/bower_components/ngmap/build/scripts/ng-map.min.js"></script>
+		
+	    <!--
+	    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARkINBqMkkU-6-tjTTY8T4s-uwt1jD3jI&callback=initMap"
+  type="text/javascript"></script>
+	    <script src="js/map.js"></script> -->
 	</body>
 </html>
-
-
-
-
-
-
-
-
-   			<!-- <nav class="navbar-fluid navbar-default navbar-fixed-top">
-				<div class="container">
-					    <a class="navbar-brand" href="/"> meetupIO </a>
-					    <p class="navbar-text"> first angular try</p>
-					    <p class="navbar-right navbar-text"><a href="auth/logout">Logout</a></p>
-					    <p class="navbar-right navbar-text">Logged in as <%= user.username %></p>		
-					    <p class="navbar-right navbar-text"><a href="../#/event">Events</a></p>
-				</div>
-			</nav> -->

@@ -22,7 +22,7 @@ module.exports = function(passport) {
         }else{
             res.render('home', { 
                 title: "meetupIO authenticated",
-                user: req.user 
+                mapsApiKey: process.env.MAPS_API_KEY
                 });
             }
         });

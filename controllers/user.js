@@ -17,13 +17,13 @@ module.exports = function() {
         })
 
         //updates user profile and returns user's data
-        .put(function(req, res, next){
+        .put(function(req, res, next) {
             var user = req.user;
 
             user.username = req.body.username;
             user.about = req.body.about;
 
-            user.save(function(err, user){
+            user.save(function(err, user) {
                 if(err)
                     return next(err);
 
@@ -38,15 +38,10 @@ module.exports = function() {
         .get(function(req, res, next) {
             User.findById(req.params.id).select('id username about gender picture friends').exec(function(err, user) {
 
-                if (err || !user) {
+                if (err || !user)
                     return next(err);
-                } else {
-                    if (user.id === req.user.id){
-                        return res.redirect('/user/profile');
-                    } else {
-                        return res.json(user);
-                    }
-                }
+                
+                return res.json(user);
             });
         });
 

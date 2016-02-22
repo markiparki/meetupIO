@@ -11,10 +11,23 @@ module.exports = function() {
 	// checks Authentication for all routes in this controller
     router.all('*', isLoggedIn);
 
+	router.route('/user')
+    	// sends events user attended
+        .get(function(req, res, next) {
+			Event.find({ 
+				'participants': {$in: [req.user] }
+			}).populate('createdBy', 'id username picture').exec(function(err, events) {
+				if(err) 
+					return next(err);
+				
+				res.json(events);
+			});
+		})
+
     router.route('/')
     	// sends all events
-        .get(function(req, res, next){
-			Event.find().populate('createdBy', 'id username picture').exec(function(err, events){
+        .get(function(req, res, next) {
+			Event.find().populate('createdBy', 'id username picture').exec(function(err, events) {
 				if(err) 
 					return next(err);
 				
@@ -23,15 +36,13 @@ module.exports = function() {
 		})
 
 		// creates a new event
-		.post(function(req, res, next){
+		.post(function(req, res, next) {
 			var event = new Event();
 			event.title = req.body.title;
 			event.body = req.body.body;
 			event.createdBy = req.user.id;
-			// event.date = req.body.date;
-			event.date = '2016-01-25T16:54:13.252Z';
-			// event.loc = [req.body.lng, req.body.lat];
-			event.loc = [23.45345, 56.34532]; //TODO: dummy lng 
+			event.date = req.body.date;
+			event.loc = [req.body.lng, req.body.lat];
 
 			event.save(function(err, event) {
 				if (err) 
@@ -43,8 +54,8 @@ module.exports = function() {
 
 	router.route('/:id')
 		// gets event by event.id
-		.get(function(req, res, next){
-			Event.findById(req.params.id).populate('createdBy', 'id username picture').exec(function(err, event){
+		.get(function(req, res, next) {
+			Event.findById(req.params.id).populate('createdBy', 'id username picture').exec(function(err, event) {
 				if(err || !event) 
 					return next(err);
 				
@@ -53,12 +64,12 @@ module.exports = function() {
 		}) 
 
 		// updates your events by event.id
-		.put(function(req, res, next){
-			Event.findById(req.params.id, function(err, event){
+		.put(function(req, res, next) {
+			Event.findById(req.params.id, function(err, event) {
 				if(err) 
 					return next(err);
 
-				if(event.createdBy === req.user.id){
+				if(event.createdBy == req.user.id) {
 				
 					event.title = req.body.title;
 					event.body = req.body.body;
@@ -68,7 +79,7 @@ module.exports = function() {
 					event.loc = [23.45345, 56.34532]; //TODO: dummy lng 
 					event.updatedAt = Date.now();
 
-					event.save(function(err, event){
+					event.save(function(err, event) {
 						if(err) return next(err);
 
 						res.json(event);
@@ -82,11 +93,11 @@ module.exports = function() {
 
 		// deletes your events by event.id
 		.delete(function(req, res, next) {
-			Event.findById(req.params.id, function(err, event){
+			Event.findById(req.params.id, function(err, event) {
 				if(err) 
 					return next(err);
 
-				if(event.createdBy === req.user.id){
+				if(event.createdBy == req.user.id) {
 					Event.remove({
 						_id: req.params.id
 					}, function(err) {
@@ -97,20 +108,20 @@ module.exports = function() {
 					});
 				} else {
 					//TODO: send right message to angular
-					res.json("not your event!");
+					res.json("not your event! " + event.createdBy +" != " + req.user.id);
 				}
 			});
 		});
 
 	router.route('/:id/comment')
 		// adds comment to event
-		.put(function(req, res, next){
-			Event.findById(req.params.id, function(err, event){
+		.put(function(req, res, next) {
+			Event.findById(req.params.id, function(err, event) {
 				if(err) 
 					return next(err);
 
 				event.comments.push({body: req.body.body, createdBy: req.user.id});
-				event.save(function(err){
+				event.save(function(err) {
 					if(err) 
 						return next(err);
 
@@ -122,7 +133,7 @@ module.exports = function() {
 	//TODO: if(already joined) res.json("already joined event")
 	router.route('/:id/join')
 		//joins user to event
-		.get(function(req, res, next){
+		.get(function(req, res, next) {
 			Event.findByIdAndUpdate(
 		        req.params.id,
 		        {$addToSet: {"participants": req.user.id}},
@@ -138,7 +149,7 @@ module.exports = function() {
 
 	router.route('/:id/leave')
 		//user leaves event
-		.get(function(req, res, next){
+		.get(function(req, res, next) {
 			Event.findByIdAndUpdate(
 		        req.params.id,
 		        {$pull: {"participants": req.user.id}},
@@ -154,7 +165,7 @@ module.exports = function() {
 
 	// MIDDLEWARE ===================================
 	//TODO: MAKE BETTER!
-    function isLoggedIn(req, res, next){
+    function isLoggedIn(req, res, next) {
         if (req.isAuthenticated())
             return next();
         else

@@ -43,7 +43,7 @@ module.exports = function(passport) {
                     console.log("-- User logged in: " + user.id); 
 
                     user.email = profile._json.email;
-                    user.picture = "https://graph.facebook.com/" + profile.id + "/picture" + "?width=300&height=300" + "&access_token=" + token;
+                    user.picture = "https://graph.facebook.com/" + profile.id + "/picture" + "?width=200&height=200" + "&access_token=" + token;
                     user.name.first = profile._json.first_name;
                     user.name.last = profile._json.last_name;
                     user.gender = profile._json.gender;

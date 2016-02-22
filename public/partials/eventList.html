@@ -1,10 +1,10 @@
 <div>
-	<h4>Event Feed</h4>
+	<h4>Event List</h4>
+	<a href="#/event/add"><h4>+ Event</h4></a>
 	<div class="eventFeed" ng-repeat="event in events | orderBy:'createdAt':true" ng-class-odd="'odd'" ng-class-even="'even'"> 	
-			<a href="api/event/{{event._id}}"> <h3>{{event.title}}</h3> </a>
+			<a href="#/event/{{event._id}}"> <h3>{{event.title}}</h3> </a>
 			<p>{{event.body}}</p>
 			<small>by <a href="api/user/{{event.createdBy._id}}">{{event.createdBy.username}}</a></small>
 			<small class="pull-right">{{event.createdAt | date:"h:mma 'on' MMM d, y"}}</small>
 	</div>
-	<a href="#"><h4>+ Event</h4></a>
 </div>

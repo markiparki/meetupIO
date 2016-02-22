@@ -36,8 +36,8 @@ var eventSchema = mongoose.Schema({
         required: true 
     },
     loc: {
-        type: [Number],  // [<longitude>, <latitude>]
-        index: '2d'      // create the geospatial index
+        type: [Number],  // [<longitude(lng)>, <latitude(lat)>]
+        index: '2dsphere'      // create the geospatial index
     },
     createdAt: { 
         type: Date, 

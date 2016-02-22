@@ -1,0 +1,29 @@
+{
+  "name": "meetupIO",
+  "description": "",
+  "main": "index.ejs",
+  "authors": [
+    "markiparki <mail@markusarendt.de>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/markiparki/meetupIO",
+  "moduleType": [
+    "node"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ngmap": "^1.16.7",
+    "bootstrap": "^3.3.6",
+    "angular": "^1.5.0",
+    "angular-route": "^1.5.0",
+    "angular-resource": "^1.5.0"
+  }
+}
