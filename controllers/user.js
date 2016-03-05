@@ -36,7 +36,7 @@ module.exports = function() {
     router.route('/:id')
         // gets user by id
         .get(function(req, res, next) {
-            User.findById(req.params.id).select('id username about gender picture friends').exec(function(err, user) {
+            User.findById(req.params.id).select('id username about gender picture follows').exec(function(err, user) {
 
                 if (err || !user)
                     return next(err);

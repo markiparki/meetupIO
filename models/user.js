@@ -28,6 +28,7 @@ var userSchema = mongoose.Schema({
         type: Date, 
         default: Date.now 
     },
+    updatedAt: Date,
     isActive: { 
         type: Boolean, 
         default: true 

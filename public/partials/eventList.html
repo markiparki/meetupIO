@@ -1,10 +1,89 @@
 <div>
-	<h4>Event List</h4>
-	<a href="#/event/add"><h4>+ Event</h4></a>
-	<div class="eventFeed" ng-repeat="event in events | orderBy:'createdAt':true" ng-class-odd="'odd'" ng-class-even="'even'"> 	
+	<div class="col-sm-8">
+		<div class="eventFeed" ng-repeat="event in events | filter:filterObj:strict" ng-class-odd="'odd'" ng-class-even="'even'">
+			<h5>{{event.date | date:"MMM d, y"}}</h5>
 			<a href="#/event/{{event._id}}"> <h3>{{event.title}}</h3> </a>
 			<p>{{event.body}}</p>
-			<small>by <a href="api/user/{{event.createdBy._id}}">{{event.createdBy.username}}</a></small>
-			<small class="pull-right">{{event.createdAt | date:"h:mma 'on' MMM d, y"}}</small>
+			<small>
+				<a href="#/user/{{event.createdBy._id}}">
+					<img ng-src="{{event.createdBy.picture}}" class="img-circle" width="18" height="18"> 
+					{{event.createdBy.username}}
+				</a>
+			</small>
+			<small class="pull-right">
+				<span>{{event.participants.length}} <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></span>
+				<span>{{event.comments.length}} <span class="glyphicon glyphicon-comment" aria-hidden="true"></span></span>
+			</small>
+		</div>
+	</div>
+	<div class="col-sm-4">
+	<!-- radius filter -->
+		<div ng-controller="mapController as vm">
+			<label>Filter by location</label>
+			<div class="input-group input-group-sm">
+				<input type="number" class="form-control" ng-model="query.dist" ng-init="query.dist = 0" ng-model-options='{ debounce: 500 }' ng-change='query()'>
+				<span class="input-group-addon" id="sizing-addon2">km</span>
+			</div>
+			<!-- hidden input -->
+			<input type="hidden" class="form-control" ng-model="query.lat">
+			<input type="hidden" class="form-control" ng-model="query.lng">
+
+			<ng-map  
+			map-initialized="vm.getCurrentPos();"
+			style="width:100%;height:350px;" 
+			map-type-control="false" 
+			street-view-control="false"
+			scrollwheel="false"
+			zoom = '14'
+			>
+				<!-- currentLoc Button -->
+				<custom-control style="margin-top:8px;margin-left:8px;" position="TOP_LEFT" on-click="vm.getCurrentPos()">
+			    	<button type='button' class="btn btn-default">
+						<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+					</button>
+			    </custom-control>
+
+				<marker ng-repeat="event in events" position="{{event.loc[1]}},{{event.loc[0]}}" id="{{event._id}}" title="{{event.title}}"></marker>
+
+				<marker title="you" icon="{path:'CIRCLE', scale: 4}" centered="true" position="{{vm.markerPos}}" draggable="true" on-dragend="vm.getMarkerPos()"></marker>
+
+				<shape id="circle" name="circle" 
+	      		stroke-color='#FF0000' 
+	      		stroke-opacity="0.2" stroke-weight="1"
+	      		fill-color= "#000000"
+	      		fill-opacity= "0.1"
+	      		center="{{vm.markerPos}}" radius="{{1000 * query.dist}}"
+	      		></shape>
+			</ng-map>
+		</div>
+		<!-- object filter -->
+		<div style="margin-top: 10px">
+			<label>Filter by content</label>
+			<div class="form-group">
+				<div class="input-group input-group-sm">
+					<span class="input-group-addon" id="sizing-addon2">Date</span>
+					<input type="date" class="form-control" ng-model="filterObj.date">
+					{{filterObj.date}}
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="input-group input-group-sm">
+					<span class="input-group-addon" id="sizing-addon2">Title</span>
+					<input type="text" class="form-control" ng-model="filterObj.title">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="input-group input-group-sm">
+					<span class="input-group-addon" id="sizing-addon2">Text</span>
+					<input type="text" class="form-control" ng-model="filterObj.body">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="input-group input-group-sm">
+					<span class="input-group-addon" id="sizing-addon2">User</span>
+					<input type="text" class="form-control" ng-model="filterObj.createdBy.username">
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

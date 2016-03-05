@@ -1,34 +1,33 @@
-<div map-lazy-load="https://maps.google.com/maps/api/js?libraries=places" ng-controller="MyCtrl as vm">
-	<h4>Event Add</h4>
-	<div>
-		<label class="control-label">Location</label>
+<div class="row" ng-controller="mapController as vm">
+	<!-- map section -->
+	<div class="col-sm-6">
 		<ng-map 
-			map-initialized="vm.getCurrentLocation()"
-			style="width:100%;height:350px;" 
-			map-type-control="true" 
-			map-type-control-options="{position:'BOTTOM_CENTER'}" 
-			street-view-control="false">
+			map-initialized="vm.getCurrentPos()"
+			style="width:100%;height:500px;" 
+			map-type-control="false"
+			street-view-control="false"
+			scrollwheel="false"
+			zoom-to-include-markers='false'>
 
-			<custom-control style="margin-top:8px;margin-left:8px;" position="TOP_LEFT" on-click="vm.getCurrentLocation()">
-		    	<button class="btn btn-default" on-click="console.log('click')">
+			<!-- currentLoc-button -->
+			<custom-control style="margin-top:8px;margin-left:8px;" position="TOP_LEFT" on-click="vm.getCurrentPos()">
+		    	<button type='button' class="btn btn-default">
 					<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
 				</button>
 		    </custom-control>
-
+		    <!-- Places-input -->
 			<custom-control style="margin-top:8px;margin-left:8px;margin-right:8px;" position="TOP_LEFT">
 				<div class="input-group input-group-sm">
-				<input places-auto-complete class="form-control" size="100" ng-model="vm.address" on-place-changed="vm.placeChanged()"/>
+					<input places-auto-complete class="form-control" size="100" on-place-changed="vm.getPlacePos()"/>
 				</div>
 			</custom-control>
 
-			<marker centered="true" position="{{vm.currentPos}}" draggable="true" on-dragend="vm.getMarkerLocation()"></marker>
+			<marker centered="true" position="{{vm.markerPos}}" draggable="true" on-dragend="vm.getMarkerPos()"></marker>
 		</ng-map>
 	</div>
-
-
-	<div>
+	<!-- filter section -->
+	<div class="col-sm-6">
 		<form class="form-horizontal" role="form" ng-Submit="post()">
-
 			<div class="form-group">
 				<label class="control-label">Title</label>
 				<input type="text" ng-value="vm.name" required class="form-control" placeholder="Event title" ng-model="newEvent.title">
@@ -36,22 +35,24 @@
 
 			<div class="form-group">
 				<label class="control-label">Description</label>
-		    	<textarea type="text" required class="form-control" maxlength="200" rows="3" placeholder="Event description" ng-model="newEvent.body"></textarea>
+		    	<textarea type="text" required class="form-control" rows="5" placeholder="Event description" ng-model="newEvent.body"></textarea>
 	    	</div>
 
 	    	<div class="form-group">
 				<label class="control-label">Date</label>
-				<input type="datetime-local" required class="form-control" ng-model="newEvent.date">
+				<input type="date" required class="form-control" ng-model="newEvent.date">
 			</div>
-
-			<div class="form-group">
-				<label class="control-label">Location</label>
-				<input disabled  required class="form-control" value="{{lat}}" ng-model="newEvent.lat">
-				<input disabled required class="form-control" ng-value="{{lng}}" ng-model="newEvent.lng">
-			</div>
-			<input class="btn submit-btn pull-right" type="submit" value="Create" />
+			<!-- hidden input -->
+			<input type="hidden" required class="form-control" ng-model="newEvent.lat">
+			<input type="hidden" required class="form-control" ng-model="newEvent.lng">
+			<input class="btn btn-primary pull-right" type="submit" value="Submit" />
 		</form>
-		<pre>newEvent = {{newEvent | json}}</pre>
 	</div>
-	<!-- TODO: add back button! -->
 </div>
+<div style="margin-top: 20px" class="row col-sm-12">
+	<a href="#/event/" class="btn btn-default pull-right">
+		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+		Back
+	</a>
+</div>
+<!-- TODO: add back button! -->

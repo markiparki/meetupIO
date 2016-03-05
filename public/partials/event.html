@@ -1,14 +1,89 @@
-<div>
-	<h4>{{event.body}}</h4>
-	<div>
-		<p>{{event.date}}</p>
-		<p>{{event.body}}</p>
-		<p><img src="{{event.createdBy.picture}}" class="img-circle" width="18" height="18"> {{event.createdBy.username}}</p>
+<div class="row">
+	<div ng-show="isOwnEvent()">
+		<button type='button' class="btn btn-default pull-right" ng-click="">
+			<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+			Edit
+		</button>
+	</div>
+	<div ng-hide="isOwnEvent()">
+		<button style="float:right" type='button' class="btn btn-default" ng-click="joinEvent()" ng-hide="userParticipates()">
+			<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+			Join
+		</button>
+		<button style="float:right" type='button' class="btn btn-default" ng-click="leaveEvent()" ng-show="userParticipates()">
+			<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+			Leave
+		</button>
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-12">
+		<h4>{{event.title}}</h4>
+		<div>
+			<p>{{event.date | date:'fullDate'}}</p>
+			<p>{{event.body}}</p>
+			<p><img ng-src="{{event.createdBy.picture}}" class="img-circle" width="18" height="18"> {{event.createdBy.username}}</p>
+			Participants: 
+			<div ng-repeat="p in event.participants">
+				<span><img ng-src="{{p.picture}}" class="img-circle" width="18" height="18"> {{p.username}}</span>
+			</div>
+		</div>
 	</div>
 
-	<div style="width:100%;height:500px;" map-lazy-load="https://maps.google.com/maps/api/js">
-  		<ng-map center="{{event.loc[1]}},{{event.loc[0]}}" zoom="17">
+</div>
+<div class="row">
+
+	<div class="col-sm-6" style="height:350px;">
+  		<ng-map 
+  		center="{{event.loc[1]}},{{event.loc[0]}}" 
+  		zoom="16"
+  		zoom-to-include-markers='false'
+		scrollwheel="false">
   			<marker position="{{event.loc[1]}},{{event.loc[0]}}"></marker>
   		</ng-map>
+	</div>
+
+	<!-- Comment section -->
+	<div class="col-sm-6">
+		<div ng-hide="userParticipates() || isOwnEvent()">
+			<p>
+				<span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+				{{event.comments.length}} Comments
+			</p>
+		</div>
+		<div ng-show="userParticipates() || isOwnEvent()">
+			<div class="media" ng-repeat="comment in event.comments" ng-class-odd="'odd'" ng-class-even="'even'" style="padding:5px;">
+				<div class="media-left">
+					<a href="#/user/{{comment.createdBy._id}}">
+						<img class="media-object" width="67" height="67" ng-src="{{comment.createdBy.picture}}" alt="...">
+					</a>
+				</div>
+				<div class="media-body">
+					<a href="api/user/{{comment.createdBy._id}}">
+						<h5 class="media-heading">{{comment.createdBy.username}}</h5>
+					</a>
+					<p>{{comment.body}}</p>
+					<small class="pull-right">{{comment.createdAt | date}}</small>
+				</div>
+			</div>
+
+			<form style="margin: 15px" class="form-horizontal" role="form" ng-Submit="addComment()">
+				<div class="form-group">
+					<div class="input-group input-group-sm">
+						<span class="input-group-addon" id="sizing-addon2">
+							<span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+						</span>
+			    		<input type="text" required class="form-control" rows="2" placeholder="Write a comment..." ng-model="newComment.body"></input>
+		    		</div>
+		    	</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="row col-sm-12">
+		<a href="#/event/" class="btn btn-default pull-right">
+			<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+			Back
+		</a>
 	</div>
 </div>

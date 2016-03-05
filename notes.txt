@@ -13,41 +13,52 @@
 	?- TODO passport: rewrite user auth
 
 27.01.16
-	-QUESTION: When to POST or PUT
+	*-QUESTION: When to POST or PUT
 
 28.01.16
 	- /:id/join: put stuff in arrays -> http://www.jonahnisenson.com/tips-on-working-with-embedded-arrays-in-mongoosemongo/
 	- TODO: add/delete follow-user
 
 01.02.16
-	- MVP und weitere features an Strippgen
-	- HTTPS! https://github.com/DylanPiercey/auto-sni
+	/- MVP und weitere features an Strippgen
+	- TODO: HTTPS! https://github.com/DylanPiercey/auto-sni
 	- Verteidigung mit Präsentation! 20 min Folien, 30-45 min Fragen 
 
 03.02.16
 	-show fb events via graph api?
 	*- req.user to client: 2 views ($http.get/api/user/profile after logged in), via window.user (npm express-expose)
 		- http://stackoverflow.com/questions/24341617/pushing-user-data-from-nodejs-server-to-angular-after-successful-login
-	- remove # in url: https://scotch.io/quick-tips/pretty-urls-in-angularjs-removing-the-hashtag
+	?- remove # in url: https://scotch.io/quick-tips/pretty-urls-in-angularjs-removing-the-hashtag
 
 04.02.16
-	TODO: angular log out when session expires
+	- TODO: angular log out when session expires
 
 05.02.16
 	- Angular CRUD: http://www.sitepoint.com/creating-crud-app-minutes-angulars-resource/
 
 11.02.16
 	- bower for frontend package management. Use CDN later.
-	-ngMap for gMaps in Angular: https://rawgit.com/allenhwkim/angularjs-google-maps/master/build/docs/index.html
-	- find way to get geoloc by click!!!
+	- ngMap for gMaps in Angular: https://rawgit.com/allenhwkim/angularjs-google-maps/master/build/docs/index.html
+	*- find way to get geoloc by click!!!
 
 16.02.16
 	- user profil -> mitglied seid anzeigen
 
 19.02.16
-	- build custom map type switch?
+	- build custom map type switch? NOPE
 
 22.02.16
 	- Current Pos via NavigatorGeolocation: 
 		- https://developers.google.com/maps/documentation/javascript/examples/map-geolocation?hl=de
 		- https://rawgit.com/allenhwkim/angularjs-google-maps/master/build/docs/NavigatorGeolocation.html
+
+24.02.16
+	*- FIX currentPos/placePos form jumping!!! DONE
+
+28.02.16
+	*- comment section styling: https://getbootstrap.com/components/#media
+	*- fix eventAdd map bug!!!
+
+01.03.16
+	- USER functions, Profile showEvents, EDITS!!!
+

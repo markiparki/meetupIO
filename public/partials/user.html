@@ -1,0 +1,28 @@
+<div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
+	<!-- follow user -->
+	<button type='button' class="btn btn-default pull-right" ng-click="followUser()" ng-hide="following()">
+		<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+		Follow
+	</button>
+	<button type='button' class="btn btn-default pull-right" ng-click="unfollowUser()" ng-show="following()">
+		<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+		Unfollow
+	</button>
+</div>
+<div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
+	<div class="col-md-4"> 
+		<img ng-src="{{user.picture}}" class="img-responsive img-circle">
+	</div>
+	<div class:"col-md-8">	
+		<h3>{{user.username}}</h3>
+		<p>{{user.name.first}} {{user.name.last}} <span class="label label-default"> {{user.gender}} </span></p>
+		<p>{{user.about}}</p>
+		<p><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{user.follows.length}}</p>
+	</div>
+</div>
+<div style="margin-top: 20px" class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
+	<a href="#/event/" class="btn btn-default pull-right">
+		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+		Back
+	</a>
+</div>

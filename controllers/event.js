@@ -7,7 +7,6 @@ var User = require('../models/user');
 var Event = require('../models/event');
 
 module.exports = function() {
-
 	// checks Authentication for all routes in this controller
     router.all('*', isLoggedIn);
 
@@ -25,14 +24,25 @@ module.exports = function() {
 		})
 
     router.route('/')
-    	// sends all events
         .get(function(req, res, next) {
-			Event.find().populate('createdBy', 'id username picture').exec(function(err, events) {
-				if(err) 
-					return next(err);
-				
-				res.json(events);
-			});
+			// https://scotch.io/tutorials/making-mean-apps-with-google-maps-part-ii
+		    var lat = req.query.lat;
+		    var lng = req.query.lng;
+		    var dist = req.query.dist;
+
+		    var query = Event.find({});
+
+		    if(Object.keys(req.query).length == 3) {
+		        query = query.where('loc').near({ center: {type: 'Point', coordinates: [lng, lat]},
+		            maxDistance: dist * 1000, spherical: true}); //* 100 -> dist in kilometers
+		    }
+		    query.populate('createdBy', 'id username picture');
+		    query.exec(function(err, events) {
+		        if(err)
+		            return next(err);
+
+		        res.json(events);
+		    });
 		})
 
 		// creates a new event
@@ -55,7 +65,11 @@ module.exports = function() {
 	router.route('/:id')
 		// gets event by event.id
 		.get(function(req, res, next) {
-			Event.findById(req.params.id).populate('createdBy', 'id username picture').exec(function(err, event) {
+			Event.findById(req.params.id)
+			.populate('createdBy', 'id username picture')
+			.populate('comments.createdBy', 'id username picture')
+			.populate('participants', 'id username picture')
+			.exec(function(err, event) {
 				if(err || !event) 
 					return next(err);
 				
@@ -73,14 +87,13 @@ module.exports = function() {
 				
 					event.title = req.body.title;
 					event.body = req.body.body;
-					// event.date = req.body.date;
-					event.date = '2016-01-25T16:54:13.252Z';
-					// event.loc = [req.body.lng, req.body.lat];
-					event.loc = [23.45345, 56.34532]; //TODO: dummy lng 
+					event.date = req.body.date;
+					event.loc = [req.body.lng, req.body.lat];
 					event.updatedAt = Date.now();
 
 					event.save(function(err, event) {
-						if(err) return next(err);
+						if(err) 
+							return next(err);
 
 						res.json(event);
 					});
@@ -130,7 +143,6 @@ module.exports = function() {
 			});
 		});
 
-	//TODO: if(already joined) res.json("already joined event")
 	router.route('/:id/join')
 		//joins user to event
 		.get(function(req, res, next) {
@@ -158,7 +170,7 @@ module.exports = function() {
 		        	if (err) 
 		        		return next(err);
 
-		            res.json("event leave");
+		            res.json("event left");
 		        }
 		    );
 		});
