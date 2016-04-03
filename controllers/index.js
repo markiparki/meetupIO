@@ -6,8 +6,7 @@ var router = express.Router();
 var User = require('../models/user');
 
 module.exports = function(passport) {
-    // organizing routes: http://start.jcolemorrison.com/quick-tip-organizing-routes-in-large-express-4-x-apps/
-    //TODO: Review - dont give passport to every router!
+    // include other controller here
     router.use('/auth', require('./auth')(passport));
     router.use('/api/user', require('./user')(passport));
     router.use('/api/event', require('./event')(passport));
@@ -20,6 +19,7 @@ module.exports = function(passport) {
                  title: "meetupIO"
              });
         }else{
+            // renders home.ejs after login
             res.render('home', { 
                 title: "meetupIO authenticated",
                 mapsApiKey: process.env.MAPS_API_KEY

@@ -1,7 +1,7 @@
 'use strict'
 
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema; // for referencing to other object schemas
+var Schema = mongoose.Schema;
 
 var userSchema = mongoose.Schema({
 
@@ -13,10 +13,7 @@ var userSchema = mongoose.Schema({
             trim: true 
         }        
     },
-    username: {
-        type: String, 
-        required: true 
-    },
+    username: String,
     gender: String,
     picture: String,
     about: String,
@@ -28,16 +25,7 @@ var userSchema = mongoose.Schema({
         type: Date, 
         default: Date.now 
     },
-    updatedAt: Date,
-    isActive: { 
-        type: Boolean, 
-        default: true 
-    },
-    isAdmin: { 
-        type: Boolean, 
-        default: false
-    }, 
-    follows: [{type: Schema.ObjectId, ref: 'User'}]
+    updatedAt: Date
 });
 
 module.exports = mongoose.model('User', userSchema);

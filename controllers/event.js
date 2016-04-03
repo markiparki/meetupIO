@@ -10,31 +10,18 @@ module.exports = function() {
 	// checks Authentication for all routes in this controller
     router.all('*', isLoggedIn);
 
-	router.route('/user')
-    	// sends events user attended
-        .get(function(req, res, next) {
-			Event.find({ 
-				'participants': {$in: [req.user] }
-			}).populate('createdBy', 'id username picture').exec(function(err, events) {
-				if(err) 
-					return next(err);
-				
-				res.json(events);
-			});
-		})
-
     router.route('/')
         .get(function(req, res, next) {
-			// https://scotch.io/tutorials/making-mean-apps-with-google-maps-part-ii
+			// gets all events with date >= Date.now. Radius-Search if all 3 parameters were used.
 		    var lat = req.query.lat;
 		    var lng = req.query.lng;
 		    var dist = req.query.dist;
 
-		    var query = Event.find({});
+		    var query = Event.find({ date: { $gte: Date.now() } });
 
 		    if(Object.keys(req.query).length == 3) {
 		        query = query.where('loc').near({ center: {type: 'Point', coordinates: [lng, lat]},
-		            maxDistance: dist * 1000, spherical: true}); //* 100 -> dist in kilometers
+		            maxDistance: dist * 1000, spherical: true}); //* 1000 -> dist in kilometers
 		    }
 		    query.populate('createdBy', 'id username picture');
 		    query.exec(function(err, events) {
@@ -59,6 +46,32 @@ module.exports = function() {
 					return next(err);
 
 				res.json(event);
+			});
+		});
+
+	router.route('/user/created')
+    	// sends events logged in user created
+        .get(function(req, res, next) {
+			Event.find({ 
+				'createdBy': req.user.id 
+			}).exec(function(err, events) {
+				if(err) 
+					return next(err);
+				
+				res.json(events);
+			});
+		});
+
+	router.route('/user/participated')
+    	// sends events logged in user participated
+        .get(function(req, res, next) {
+			Event.find({ 
+				'participants': {$in: [req.user] }
+			}).exec(function(err, events) {
+				if(err) 
+					return next(err);
+				
+				res.json(events);
 			});
 		});
 
@@ -98,8 +111,7 @@ module.exports = function() {
 						res.json(event);
 					});
 				} else {
-					//TODO: send right message to angular
-					res.json("not your event! " + event.createdBy + " != " + req.user.id);
+					res.json("Error: Not your event! " + event.createdBy + " != " + req.user.id);
 				}	
 			});
 		})
@@ -120,8 +132,7 @@ module.exports = function() {
 						res.json("Event deleted");
 					});
 				} else {
-					//TODO: send right message to angular
-					res.json("not your event! " + event.createdBy +" != " + req.user.id);
+					res.json("Error: Not your event! " + event.createdBy +" != " + req.user.id);
 				}
 			});
 		});
@@ -144,7 +155,7 @@ module.exports = function() {
 		});
 
 	router.route('/:id/join')
-		//joins user to event
+		// user joins event
 		.get(function(req, res, next) {
 			Event.findByIdAndUpdate(
 		        req.params.id,
@@ -160,7 +171,7 @@ module.exports = function() {
 		});
 
 	router.route('/:id/leave')
-		//user leaves event
+		// user leaves event
 		.get(function(req, res, next) {
 			Event.findByIdAndUpdate(
 		        req.params.id,
@@ -176,13 +187,11 @@ module.exports = function() {
 		});
 
 	// MIDDLEWARE ===================================
-	//TODO: MAKE BETTER!
     function isLoggedIn(req, res, next) {
         if (req.isAuthenticated())
             return next();
         else
         	console.log('-- You must be logged in to do that.');
-            req.flash('message', 'You must be logged in to do that.');
             res.redirect('/');
     };
     // ===============================================

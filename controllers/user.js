@@ -22,6 +22,7 @@ module.exports = function() {
 
             user.username = req.body.username;
             user.about = req.body.about;
+            user.updatedAt = Date.now();
 
             user.save(function(err, user) {
                 if(err)
@@ -31,12 +32,10 @@ module.exports = function() {
             });
         });
 
-
-    //TODO: make better user search!!!
     router.route('/:id')
         // gets user by id
         .get(function(req, res, next) {
-            User.findById(req.params.id).select('id username about gender picture follows').exec(function(err, user) {
+            User.findById(req.params.id).select('id username about gender picture facebook').exec(function(err, user) {
 
                 if (err || !user)
                     return next(err);
@@ -46,13 +45,11 @@ module.exports = function() {
         });
 
     // MIDDLEWARE ===================================
-    //TODO: MAKE BETTER!
     function isLoggedIn(req, res, next) {
         if (req.isAuthenticated())
             return next();
         else
             console.log('-- You must be logged in to do that.');
-            req.flash('message', 'You must be logged in to do that.');
             res.redirect('/');
     }
     // ===============================================

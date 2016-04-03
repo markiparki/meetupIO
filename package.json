@@ -1,13 +1,14 @@
 {
   "name": "meetupIO",
-  "version": "0.0.3",
+  "version": "0.0.1",
+  "description": "Find activities near you and meet new people!",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
   },
+  "author": "Markus Arendt <mail@markusarendt.de>",
   "dependencies": {
     "body-parser": "~1.13.2",
-    "connect-flash": "~0.1.1",
     "cookie-parser": "~1.3.5",
     "debug": "~2.2.0",
     "dotenv": "^1.2.0",

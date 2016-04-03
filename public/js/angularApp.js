@@ -1,4 +1,4 @@
-var app = angular.module('angularApp', ['ngRoute', 'ngResource', 'ngMap']).run(function($rootScope, $http) {
+var app = angular.module('angularApp', ['ngRoute', 'ngMap']).run(function($rootScope, $http) {
 	// init root user data
 	$http.get('/api/user/profile')
 		.success(function(response) {
@@ -16,6 +16,7 @@ var app = angular.module('angularApp', ['ngRoute', 'ngResource', 'ngMap']).run(f
 	};
 });
 
+// client routing
 app.config(function($routeProvider) {
 	$routeProvider
 		//
@@ -36,22 +37,13 @@ app.config(function($routeProvider) {
 		})
 		.when('/user/profile', {
 			templateUrl: 'partials/userProfile.html',
-			controller: ''
+			controller: 'userProfileController'
 		})
 		.when('/user/:id', {
 			templateUrl: 'partials/user.html',
 			controller: 'userController'
 		})
 });
-
-app.factory('eventService', function($resource) {
-	return $resource('/api/event/:id');
-});
-
-app.factory('userService', function($resource) {
-	return $resource('/api/user/:id');
-});
-
 
 app.controller('eventListController', function($location, $scope, $rootScope, $http) {
 
@@ -71,7 +63,6 @@ app.controller('eventListController', function($location, $scope, $rootScope, $h
 	$scope.newEvent = {title: '', body: '', date: '', lng: '', lat: '', createdBy: ''};
 	$scope.post = function() {
   		$scope.newEvent.createdBy = $rootScope.currentUser;
-	  	// eventService.save($scope.newEvent, function() {
   		$http.post('/api/event/', $scope.newEvent)
   			.success(function() {
 	    		$scope.newEvent = {title: '', body: '', date: '', lng: '', lat: '', createdBy: ''};
@@ -95,7 +86,6 @@ app.controller('eventController', function($scope, $rootScope, $route, $routePar
 			    }
 			    return false;
 			};
-
 			$scope.isOwnEvent = function(){
 				if ($scope.event.createdBy._id === $rootScope.currentUser._id)
 					return true;
@@ -157,7 +147,24 @@ app.controller('userController', function($http, $routeParams, $scope) {
 		.error(function(response) {
         	console.log('error: ' + response);
         });
-        //TODO: followUser(), unfollowUser(), following()
+})
+
+app.controller('userProfileController', function($http, $scope) {
+	$http.get('/api/event/user/participated')
+		.success(function(response) {
+	    	$scope.eventsParticipated = response;
+		})
+		.error(function(response) {
+        	console.log('error: ' + response);
+        });
+
+    $http.get('/api/event/user/created')
+		.success(function(response) {
+	    	$scope.eventsCreated = response;
+		})
+		.error(function(response) {
+        	console.log('error: ' + response);
+        });
 })
 
 app.controller('mapController', function(NgMap, NavigatorGeolocation, $scope) {
@@ -174,7 +181,6 @@ app.controller('mapController', function(NgMap, NavigatorGeolocation, $scope) {
 
 	vm.getMarkerPos = function() {
 		vm.pos = this.getPosition();
-		// vm.map.setCenter(vm.pos);
 		vm.markerPos = vm.pos;
 		$scope.newEvent.lat = $scope.query.lat = vm.markerPos.lat();
 		$scope.newEvent.lng = $scope.query.lng = vm.markerPos.lng();
@@ -192,7 +198,6 @@ app.controller('mapController', function(NgMap, NavigatorGeolocation, $scope) {
 			$scope.newEvent.lng = $scope.query.lng = vm.markerPos.lng;
 		});
 	}
-	// https://rawgit.com/allenhwkim/angularjs-google-maps/master/build/docs/NgMap.html
 	NgMap.getMap().then(function(map) {
 		vm.map = map;
 	});

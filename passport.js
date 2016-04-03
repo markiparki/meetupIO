@@ -1,7 +1,5 @@
 'use strict'
 
-//TODO: clean comments!
-// facebook daten direkt!
 // App Settings: https://developers.facebook.com/apps/151583945205925/
 var FacebookStrategy = require('passport-facebook').Strategy;
 var User = require('./models/user');
@@ -24,9 +22,10 @@ module.exports = function(passport) {
 
     // FACEBOOK LOGIN
     passport.use(new FacebookStrategy({
-        clientID        : process.env.FB_CLIENT_ID,
-        clientSecret    : process.env.FB_CLIENT_SECRET,
-        callbackURL     : process.env.FB_CALLBACK_URL,
+        clientID: process.env.FB_CLIENT_ID,
+        clientSecret: process.env.FB_CLIENT_SECRET,
+        callbackURL: process.env.FB_CALLBACK_URL,
+        enableProof: true,
         profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl', 'gender'] // defines which profile fields we get from facebook
     },
     function(token, refreshToken, profile, done) {
@@ -61,13 +60,12 @@ module.exports = function(passport) {
                     var newUser = new User();
                     newUser.facebook.id = profile._json.id;
                     newUser.email = profile._json.email;
-                    // TODO: change picture size
                     newUser.picture = "https://graph.facebook.com/" + profile.id + "/picture" + "?width=300&height=300" + "&access_token=" + token;
                     newUser.name.first = profile._json.first_name;
                     newUser.name.last = profile._json.last_name;
-                    newUser.username = profile._json.first_name + ' ' + profile._json.last_name.slice(0, 1) + '.'; //TODO: rework!
+                    newUser.username = profile._json.first_name + ' ' + profile._json.last_name.slice(0, 1) + '.';
                     newUser.gender = profile._json.gender;
-                    newUser.facebook.link = profile._json.link;
+                    newUser.facebook.link = "https://www.facebook.com/" + profile._json.id;
 
                     newUser.save(function(err) {
                         if (err) {

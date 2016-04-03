@@ -11,7 +11,6 @@ var bodyParser = require('body-parser');
 
 var passport = require('passport');
 var session = require('express-session');
-var flash = require('connect-flash');
 var routes = require('./controllers')(passport); //pass passport to router
 var mongoose = require('mongoose');
 mongoose.connect(process.env.DB_URL); // connect to our database
@@ -22,7 +21,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
+// uncomment after placing a favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev')); // log every request to the console
 app.use(bodyParser.json()); // get information from html forms
@@ -30,11 +29,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(session({
     secret: process.env.SESSION_SECRET,
-    saveUninitialized: false, // don't create session until something stored
-    resave: true // don't save session if unmodified
+    saveUninitialized: false, // does not create a session until something stored
+    resave: false // dooes not save a session if unmodified
 }));
 app.use(express.static(path.join(__dirname, 'public'))); // shows '/public' as root folder to the user
-app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 var initPassport = require('./passport'); // pass passport for configuration

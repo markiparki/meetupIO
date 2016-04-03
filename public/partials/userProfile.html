@@ -1,4 +1,5 @@
-<div>
+<!-- user picture and data -->
+<div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
 	<div class="col-md-4"> 
 		<img ng-src="{{currentUser.picture}}" class="img-responsive img-circle">
 	</div>
@@ -6,15 +7,37 @@
 		<h3>{{currentUser.username}}</h3>
 		<p>{{currentUser.name.first}} {{currentUser.name.last}} <span class="label label-default"> {{currentUser.gender}} </span></p>
 		<p>{{currentUser.email}}</p>
+		<p><a target="_blank" href="{{currentUser.facebook.link}}">Facebook Profile</a></p>
 		<p>{{currentUser.about}}</p>
 	</div>
 </div>
-<!-- TDOD: show all user events -->
-<div class="userEvents .col-md-6 .col-md-offset-3">
-	<div class="eventFeed" > 	
-			<a href="api/event/{{event._id}}"> <h3>{{event.title}}</h3> </a>
-			<p>{{event.body}}</p>
-			<small>by <a href="api/user/{{event.createdBy._id}}">{{event.createdBy.username}}</a></small>
-			<small class="pull-right">{{event.createdAt | date:"h:mma 'on' MMM d, y"}}</small>
+<!-- events created/participated -->
+<div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
+	<div class="col-sm-6">
+		<p>{{eventsCreated.length}} activities you created</p>
+		<div class="eventFeed" ng-repeat="event in eventsCreated | orderBy: 'date' :true" ng-class-odd="'odd'" ng-class-even="'even'">
+			<a href="#/event/{{event._id}}"> {{event.title}} </a>
+			<span class="pull-right">
+				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+				{{event.date | date:"shortDate"}}
+			</span>
+		</div>
 	</div>
+	<div class="col-sm-6">
+		<p>{{eventsParticipated.length}} activities you joined</p>
+		<div class="eventFeed" ng-repeat="event in eventsParticipated | orderBy: 'date' :true" ng-class-odd="'odd'" ng-class-even="'even'">
+			<a href="#/event/{{event._id}}"> {{event.title}} </a>
+			<span class="pull-right">
+				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+				{{event.date | date:"shortDate"}}
+			</span>
+		</div>
+	</div>
+</div>
+<!-- back button -->
+<div style="margin-top: 20px" class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
+	<a href="#/event/" class="btn btn-default pull-right">
+		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+		Back
+	</a>
 </div>

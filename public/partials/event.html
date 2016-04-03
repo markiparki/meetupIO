@@ -1,4 +1,5 @@
-<div class="row">
+<!-- join/leave button -->
+<div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
 	<div ng-show="isOwnEvent()">
 		<button type='button' class="btn btn-default pull-right" ng-click="">
 			<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
@@ -16,23 +17,32 @@
 		</button>
 	</div>
 </div>
-<div class="row">
-	<div class="col-sm-12">
+<!-- event description -->
+<div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
+	<div class="col-sm-6">
 		<h4>{{event.title}}</h4>
 		<div>
-			<p>{{event.date | date:'fullDate'}}</p>
+			<p>
+				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+				{{event.date | date:'MMM d, y, h:mm'}}
+			</p>
 			<p>{{event.body}}</p>
-			<p><img ng-src="{{event.createdBy.picture}}" class="img-circle" width="18" height="18"> {{event.createdBy.username}}</p>
+			<p>
+				<a href="#/user/{{event.createdBy._id}}">
+					<img ng-src="{{event.createdBy.picture}}" class="img-circle" width="18" height="18"> 
+					{{event.createdBy.username}}
+				</a>
+			</p>
 			Participants: 
 			<div ng-repeat="p in event.participants">
-				<span><img ng-src="{{p.picture}}" class="img-circle" width="18" height="18"> {{p.username}}</span>
+				<a href="#/user/{{p._id}}">
+					<img ng-src="{{p.picture}}" class="img-circle" width="18" height="18"> 
+					{{p.username}}&nbsp;
+				</a>
 			</div>
 		</div>
 	</div>
-
-</div>
-<div class="row">
-
+	<!-- Event map -->
 	<div class="col-sm-6" style="height:350px;">
   		<ng-map 
   		center="{{event.loc[1]}},{{event.loc[0]}}" 
@@ -42,9 +52,11 @@
   			<marker position="{{event.loc[1]}},{{event.loc[0]}}"></marker>
   		</ng-map>
 	</div>
+</div>
 
-	<!-- Comment section -->
-	<div class="col-sm-6">
+<div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
+	<!-- event comments -->
+	<div class="col-sm-12">
 		<div ng-hide="userParticipates() || isOwnEvent()">
 			<p>
 				<span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
@@ -79,11 +91,11 @@
 			</form>
 		</div>
 	</div>
-
-	<div class="row col-sm-12">
-		<a href="#/event/" class="btn btn-default pull-right">
-			<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-			Back
-		</a>
-	</div>
+</div>
+<!-- back button -->
+<div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
+	<a href="#/event/" class="btn btn-default pull-right">
+		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+		Back
+	</a>
 </div>

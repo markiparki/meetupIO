@@ -12,7 +12,7 @@ module.exports = function(passport) {
 
 	//sends failure login state back to angular
 	router.get('/failure', function(req, res) {
-		res.send({state: 'failure', user: null, message: "facebook authorization failed"});
+		res.send({state: 'failure', user: null, message: "Facebook authorization failed. Please try again."});
 	});
   
   

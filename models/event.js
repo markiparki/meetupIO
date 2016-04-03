@@ -3,7 +3,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// TODO: Comments in Event -> http://mongoosejs.com/docs/2.7.x/docs/embedded-documents.html
 var commentSchema = mongoose.Schema({
     body: {
         type: String, 
@@ -37,7 +36,7 @@ var eventSchema = mongoose.Schema({
     },
     loc: {
         type: [Number],  // [<longitude(lng)>, <latitude(lat)>]
-        index: '2dsphere'      // create the geospatial index
+        index: '2dsphere'      // creates the geospatial index
     },
     createdAt: { 
         type: Date, 
@@ -46,7 +45,6 @@ var eventSchema = mongoose.Schema({
     updatedAt: Date,
     comments: [commentSchema],
     participants: [{ type: Schema.ObjectId, ref: 'User' }]
-    //TODO: watchers?
 });
 
 module.exports = mongoose.model('Event', eventSchema);
