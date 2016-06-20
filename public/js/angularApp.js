@@ -19,7 +19,6 @@ var app = angular.module('angularApp', ['ngRoute', 'ngMap']).run(function($rootS
 // client routing
 app.config(function($routeProvider) {
 	$routeProvider
-		//
 		.when('/', {
 			redirectTo: '/event'
 		})
@@ -42,11 +41,10 @@ app.config(function($routeProvider) {
 		.when('/user/:id', {
 			templateUrl: 'partials/user.html',
 			controller: 'userController'
-		})
+		});
 });
 
 app.controller('eventListController', function($location, $scope, $rootScope, $http) {
-
 	$scope.query = function(){
 		$http.get('/api/event/', {params: {dist: $scope.query.dist, lat: $scope.query.lat, lng: $scope.query.lng}})
 		.success(function(response){
@@ -59,7 +57,7 @@ app.controller('eventListController', function($location, $scope, $rootScope, $h
 	// gets event list
 	$scope.query();
 
-	// create new events
+	// creates new event
 	$scope.newEvent = {title: '', body: '', date: '', lng: '', lat: '', createdBy: ''};
 	$scope.post = function() {
   		$scope.newEvent.createdBy = $rootScope.currentUser;
@@ -75,7 +73,6 @@ app.controller('eventListController', function($location, $scope, $rootScope, $h
 });
 
 app.controller('eventController', function($scope, $rootScope, $route, $routeParams, $http) {
-	// TODO: Service.get is only the promise, not the real event!!! CHECK ALL CONTROLLER!
 	$http.get('/api/event/' + $routeParams.id)
 		.success(function(response) {
 	    	$scope.event = response;
@@ -105,7 +102,7 @@ app.controller('eventController', function($scope, $rootScope, $route, $routePar
 		$http.put('/api/event/' + $routeParams.id + '/comment', $scope.newComment)
 			.success(function(response) {
 		        console.log(response);
-		        // TODO: any way to only update comments? server side get comments???
+		        // reload route after adding a comment and set newComment back
 		        $route.reload();
 		        $scope.newComment = {body:'', createdBy:''};
 			})
@@ -116,21 +113,22 @@ app.controller('eventController', function($scope, $rootScope, $route, $routePar
 
 	// Participate / Leave
 	$scope.joinEvent = function(){
-		$http.get('/api/event/' + $routeParams.id + '/join')
+		$http.put('/api/event/' + $routeParams.id + '/join')
 			.success(function(response) {
 		        console.log(response);
-		        // TODO: any way to only update participants? server side get comments???
+		        // reload route after joining the event
 		        $route.reload();
 			})
 			.error(function(response) {
 	        	console.log('error: ' + response);
 	        });
 	};
+
 	$scope.leaveEvent = function(){
-		$http.get('/api/event/' + $routeParams.id + '/leave')
+		$http.put('/api/event/' + $routeParams.id + '/leave')
 			.success(function(response) {
 		        console.log(response);
-		        // TODO: any way to only update participants? server side get comments???
+		        // reload route after leaving the event
 		        $route.reload();
 			})
 			.error(function(response) {
@@ -139,7 +137,7 @@ app.controller('eventController', function($scope, $rootScope, $route, $routePar
 	};
 });	
 
-app.controller('userController', function($http, $routeParams, $scope) {
+app.controller('userController', function($http, $routeParams, $scope) {	
 	$http.get('/api/user/' + $routeParams.id)
 		.success(function(response) {
 	    	$scope.user = response;
@@ -147,9 +145,9 @@ app.controller('userController', function($http, $routeParams, $scope) {
 		.error(function(response) {
         	console.log('error: ' + response);
         });
-})
+});
 
-app.controller('userProfileController', function($http, $scope) {
+app.controller('userProfileController', function($http, $scope) {	
 	$http.get('/api/event/user/participated')
 		.success(function(response) {
 	    	$scope.eventsParticipated = response;
@@ -165,27 +163,29 @@ app.controller('userProfileController', function($http, $scope) {
 		.error(function(response) {
         	console.log('error: ' + response);
         });
-})
+});
 
 app.controller('mapController', function(NgMap, NavigatorGeolocation, $scope) {
 	var vm = this;
 	vm.markerPos = "";
 
+	// Google Places location
 	vm.getPlacePos = function() {
 		vm.place = this.getPlace();
 		vm.map.setCenter(vm.place.geometry.location);
 		vm.markerPos = vm.place.geometry.location;
 		$scope.newEvent.lat = $scope.query.lat = vm.place.geometry.location.lat();
 		$scope.newEvent.lng = $scope.query.lng = vm.place.geometry.location.lng();
-	}
+	};
 
 	vm.getMarkerPos = function() {
 		vm.pos = this.getPosition();
 		vm.markerPos = vm.pos;
 		$scope.newEvent.lat = $scope.query.lat = vm.markerPos.lat();
 		$scope.newEvent.lng = $scope.query.lng = vm.markerPos.lng();
-	}
+	};
 
+	// user location
 	vm.getCurrentPos = function() {
 		NavigatorGeolocation.getCurrentPosition().then(function(position) {
 			vm.currentPos = {
@@ -197,7 +197,8 @@ app.controller('mapController', function(NgMap, NavigatorGeolocation, $scope) {
 			$scope.newEvent.lat = $scope.query.lat = vm.markerPos.lat;
 			$scope.newEvent.lng = $scope.query.lng = vm.markerPos.lng;
 		});
-	}
+	};
+
 	NgMap.getMap().then(function(map) {
 		vm.map = map;
 	});

@@ -7,7 +7,7 @@ var User = require('../models/user');
 
 module.exports = function() {
 
-    // checks Authentication for all routes in this controller
+    // checks authentication for all routes in this controller
     router.all('*', isLoggedIn);
 
     router.route('/profile')
@@ -16,7 +16,7 @@ module.exports = function() {
             res.json(req.user);
         })
 
-        //updates user profile and returns user's data
+        // updates user profile and returns userdata
         .put(function(req, res, next) {
             var user = req.user;
 

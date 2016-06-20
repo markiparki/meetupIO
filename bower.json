@@ -1,6 +1,6 @@
 {
   "name": "meetupIO",
-  "description": "",
+  "description": "Find activities near you and meet new people!",
   "main": "index.ejs",
   "authors": [
     "Markus Arendt <mail@markusarendt.de>"

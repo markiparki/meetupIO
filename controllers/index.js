@@ -6,7 +6,7 @@ var router = express.Router();
 var User = require('../models/user');
 
 module.exports = function(passport) {
-    // include other controller here
+    // include other controllers here
     router.use('/auth', require('./auth')(passport));
     router.use('/api/user', require('./user')(passport));
     router.use('/api/event', require('./event')(passport));
@@ -19,7 +19,7 @@ module.exports = function(passport) {
                  title: "meetupIO"
              });
         }else{
-            // renders home.ejs after login
+            // renders home.ejs after authentication and sends Google Maps API Key
             res.render('home', { 
                 title: "meetupIO authenticated",
                 mapsApiKey: process.env.MAPS_API_KEY

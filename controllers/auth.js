@@ -15,13 +15,12 @@ module.exports = function(passport) {
 		res.send({state: 'failure', user: null, message: "Facebook authorization failed. Please try again."});
 	});
   
-  
     // facebook login
-    // send to facebook to do the authentication
+    // sends to facebook to do the authentication
     router.route('/facebook')
         .get(passport.authenticate('facebook', { scope : 'email' }));
 
-    // handle the callback after facebook has authenticated the user
+    // handles the callback after facebook has authenticated the user
     router.route('/facebook/callback')
         .get(
             passport.authenticate('facebook', {

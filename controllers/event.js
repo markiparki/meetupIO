@@ -7,7 +7,7 @@ var User = require('../models/user');
 var Event = require('../models/event');
 
 module.exports = function() {
-	// checks Authentication for all routes in this controller
+	// checks authentication for all routes in this controller
     router.all('*', isLoggedIn);
 
     router.route('/')
@@ -90,7 +90,7 @@ module.exports = function() {
 			});
 		}) 
 
-		// updates your events by event.id
+		// updates event by event.id
 		.put(function(req, res, next) {
 			Event.findById(req.params.id, function(err, event) {
 				if(err) 
@@ -116,7 +116,7 @@ module.exports = function() {
 			});
 		})
 
-		// deletes your events by event.id
+		// deletes event by event.id
 		.delete(function(req, res, next) {
 			Event.findById(req.params.id, function(err, event) {
 				if(err) 
@@ -156,7 +156,7 @@ module.exports = function() {
 
 	router.route('/:id/join')
 		// user joins event
-		.get(function(req, res, next) {
+		.put(function(req, res, next) {
 			Event.findByIdAndUpdate(
 		        req.params.id,
 		        {$addToSet: {"participants": req.user.id}},
@@ -172,7 +172,7 @@ module.exports = function() {
 
 	router.route('/:id/leave')
 		// user leaves event
-		.get(function(req, res, next) {
+		.put(function(req, res, next) {
 			Event.findByIdAndUpdate(
 		        req.params.id,
 		        {$pull: {"participants": req.user.id}},

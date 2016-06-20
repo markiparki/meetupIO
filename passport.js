@@ -26,7 +26,7 @@ module.exports = function(passport) {
         clientSecret: process.env.FB_CLIENT_SECRET,
         callbackURL: process.env.FB_CALLBACK_URL,
         enableProof: true,
-        profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl', 'gender'] // defines which profile fields we get from facebook
+        profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl', 'gender'] // defines which profile fields are needed from facebook
     },
     function(token, refreshToken, profile, done) {
 
