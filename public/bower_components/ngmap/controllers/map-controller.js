@@ -14,6 +14,7 @@
 
     vm.mapOptions; /** @memberof __MapController */
     vm.mapEvents;  /** @memberof __MapController */
+    vm.eventListeners;  /** @memberof __MapController */
 
     /**
      * Add an object to the collection of group
@@ -94,14 +95,21 @@
      * @function zoomToIncludeMarkers
      */
     vm.zoomToIncludeMarkers = function() {
-      var bounds = new google.maps.LatLngBounds();
-      for (var k1 in vm.map.markers) {
-        bounds.extend(vm.map.markers[k1].getPosition());
+      // Only fit to bounds if we have any markers
+      // object.keys is supported in all major browsers (IE9+)
+      if ((vm.map.markers != null && Object.keys(vm.map.markers).length > 0) || (vm.map.customMarkers != null && Object.keys(vm.map.customMarkers).length > 0)) {
+        var bounds = new google.maps.LatLngBounds();
+        for (var k1 in vm.map.markers) {
+          bounds.extend(vm.map.markers[k1].getPosition());
+        }
+        for (var k2 in vm.map.customMarkers) {
+          bounds.extend(vm.map.customMarkers[k2].getPosition());
+        }
+    	  if (vm.mapOptions.maximumZoom) {
+    		  vm.enableMaximumZoomCheck = true; //enable zoom check after resizing for markers
+    	  }
+        vm.map.fitBounds(bounds);
       }
-      for (var k2 in vm.map.customMarkers) {
-        bounds.extend(vm.map.customMarkers[k2].getPosition());
-      }
-      vm.map.fitBounds(bounds);
     };
 
     /**
@@ -139,7 +147,7 @@
 
         /**
          * rebuild mapOptions for lazyInit
-         * becasue attributes values might have been changed
+         * because attributes values might have been changed
          */
         var filtered = Attr2MapOptions.filter($attrs);
         var options = Attr2MapOptions.getOptions(filtered);
@@ -166,6 +174,8 @@
         ((typeof center === 'string') && center.match(/\{\{.*\}\}/))
       ) {
         mapOptions.center = new google.maps.LatLng(0, 0);
+      } else if( (typeof center === 'string') && center.match(/[0-9.-]*,[0-9.-]*/) ){
+           mapOptions.center = new google.maps.LatLng(center);
       } else if (!(center instanceof google.maps.LatLng)) {
         var geoCenter = mapOptions.center;
         delete mapOptions.center;
@@ -184,7 +194,9 @@
 
       // set events
       for (var eventName in mapEvents) {
-        google.maps.event.addListener(vm.map, eventName, mapEvents[eventName]);
+        var event = mapEvents[eventName];
+        var listener = google.maps.event.addListener(vm.map, eventName, event);
+        vm.eventListeners[eventName] = listener;
       }
 
       // set observers
@@ -207,6 +219,18 @@
           $parse($attrs.mapInitialized)($scope, {map: vm.map});
         }
       });
+	  
+	  //add maximum zoom listeners if zoom-to-include-markers and and maximum-zoom are valid attributes
+	  if (mapOptions.zoomToIncludeMarkers && mapOptions.maximumZoom) {
+	    google.maps.event.addListener(vm.map, 'zoom_changed', function() {
+          if (vm.enableMaximumZoomCheck == true) {
+			vm.enableMaximumZoomCheck = false;
+	        google.maps.event.addListenerOnce(vm.map, 'bounds_changed', function() { 
+		      vm.map.setZoom(Math.min(mapOptions.maximumZoom, vm.map.getZoom())); 
+		    });
+	  	  }
+	    });
+	  }
     };
 
     $scope.google = google; //used by $scope.eval to avoid eval()
@@ -225,9 +249,21 @@
 
     vm.mapOptions = mapOptions;
     vm.mapEvents = mapEvents;
+    vm.eventListeners = {};
 
     if (options.lazyInit) { // allows controlled initialization
-      vm.map = {id: $attrs.id}; //set empty, not real, map
+      // parse angular expression for dynamic ids
+      if (!!$attrs.id && 
+      	  // starts with, at position 0
+	  $attrs.id.indexOf("{{", 0) === 0 &&
+	  // ends with
+	  $attrs.id.indexOf("}}", $attrs.id.length - "}}".length) !== -1) {
+        var idExpression = $attrs.id.slice(2,-2);
+        var mapId = $parse(idExpression)($scope);
+      } else {
+        var mapId = $attrs.id;
+      }
+      vm.map = {id: mapId}; //set empty, not real, map
       NgMap.addMap(vm);
     } else {
       vm.initializeMap();

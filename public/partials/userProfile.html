@@ -16,7 +16,7 @@
 	<div class="col-sm-6">
 		<p>{{eventsCreated.length}} activities you created</p>
 		<div class="eventFeed" ng-repeat="event in eventsCreated | orderBy: 'date' :true" ng-class-odd="'odd'" ng-class-even="'even'">
-			<a href="#/event/{{event._id}}"> {{event.title}} </a>
+			<a href="#!/event/{{event._id}}"> {{event.title}} </a>
 			<span class="pull-right">
 				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
 				{{event.date | date:"shortDate"}}
@@ -26,7 +26,7 @@
 	<div class="col-sm-6">
 		<p>{{eventsParticipated.length}} activities you joined</p>
 		<div class="eventFeed" ng-repeat="event in eventsParticipated | orderBy: 'date' :true" ng-class-odd="'odd'" ng-class-even="'even'">
-			<a href="#/event/{{event._id}}"> {{event.title}} </a>
+			<a href="#!/event/{{event._id}}"> {{event.title}} </a>
 			<span class="pull-right">
 				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
 				{{event.date | date:"shortDate"}}
@@ -36,7 +36,7 @@
 </div>
 <!-- back button -->
 <div style="margin-top: 20px" class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
-	<a href="#/event/" class="btn btn-default pull-right">
+	<a href="#!/event/" class="btn btn-default pull-right">
 		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
 		Back
 	</a>

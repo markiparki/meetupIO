@@ -41,15 +41,15 @@
   /**
    * @memberof NgMap
    * @function getMap
-   * @param {Hash} options optional, e.g., {id: 'foo, timeout: 5000}
+   * @param {String} optional, id e.g., 'foo'
    * @returns promise
    */
-  var getMap = function(options) {
-    options = options || {};
-    var deferred = $q.defer();
+  var getMap = function(id) {
+    id = typeof id === 'object' ? id.id : id;
+    id = id || 0;
 
-    var id = options.id || 0;
-    var timeout = options.timeout || 2000;
+    var deferred = $q.defer();
+    var timeout = 2000;
 
     function waitForMap(timeElapsed){
       if(mapControllers[id]){
@@ -89,9 +89,10 @@
     var len = Object.keys(mapControllers).length - 1;
     var mapId = mapCtrl.map.id || len;
     if (mapCtrl.map) {
-      for (var eventName in mapCtrl.mapEvents) {
+      for (var eventName in mapCtrl.eventListeners) {
         console.log('clearing map events', eventName);
-        google.maps.event.clearListeners(mapCtrl.map, eventName);
+        var listener = mapCtrl.eventListeners[eventName];
+        google.maps.event.removeListener(listener);
       }
       if (mapCtrl.map.controls) {
         mapCtrl.map.controls.forEach(function(ctrl) {
@@ -140,6 +141,14 @@
           deferred.reject(error);
         }
       );
+      // var geocoder = new google.maps.Geocoder();
+      // geocoder.geocode(options, function (results, status) {
+      //   if (status == google.maps.GeocoderStatus.OK) {
+      //     deferred.resolve(results);
+      //   } else {
+      //     deferred.reject(status);
+      //   }
+      // });
     }
 
     return deferred.promise;

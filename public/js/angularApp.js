@@ -1,13 +1,12 @@
 var app = angular.module('angularApp', ['ngRoute', 'ngMap']).run(function($rootScope, $http) {
 	// init root user data
 	$http.get('/api/user/profile')
-		.success(function(response) {
+		.then(function successCallback(response) {
       		$rootScope.authenticated = true;
-	        $rootScope.currentUser = response;
+	        $rootScope.currentUser = response.data;
 	        console.log('authenticated: ' + $rootScope.authenticated + ' | current user: ' + $rootScope.currentUser.username);
-		})
-		.error(function(response) {
-        	console.log('error: ' + response);
+		}, function errorCallback(response) {
+        	console.log('error: ' + response.status);
         });
     // overrides userdata at logout
 	$rootScope.logout = function() {
@@ -44,14 +43,19 @@ app.config(function($routeProvider) {
 		});
 });
 
+// NOTE: Workaround for "Possibly unhandled rejection: ZERO_RESULTS" Error in Event
+// See: https://github.com/angular-ui/ui-router/issues/2889
+app.config(['$qProvider', function ($qProvider) {
+    $qProvider.errorOnUnhandledRejections(false);
+}]);
+
 app.controller('eventListController', function($location, $scope, $rootScope, $http) {
 	$scope.query = function(){
 		$http.get('/api/event/', {params: {dist: $scope.query.dist, lat: $scope.query.lat, lng: $scope.query.lng}})
-		.success(function(response){
-			$scope.events = response;
-		})
-		.error(function(response) {
-        	console.log('error: ' + response);
+		.then(function successCallback(response){
+			$scope.events = response.data;
+		}, function errorCallback(response) {
+        	console.log('error: ' + response.status);
         });
 	};
 	// gets event list
@@ -62,20 +66,19 @@ app.controller('eventListController', function($location, $scope, $rootScope, $h
 	$scope.post = function() {
   		$scope.newEvent.createdBy = $rootScope.currentUser;
   		$http.post('/api/event/', $scope.newEvent)
-  			.success(function() {
+  			.then(function successCallback() {
 	    		$scope.newEvent = {title: '', body: '', date: '', lng: '', lat: '', createdBy: ''};
 	    		$location.path(/event/);
-	  		})
-	  		.error(function(response) {
-	        	console.log('error: ' + response);
+	  		}, function errorCallback(response) {
+	        	console.log('error: ' + response.status);
 	        });
 	};
 });
 
 app.controller('eventController', function($scope, $rootScope, $route, $routeParams, $http) {
 	$http.get('/api/event/' + $routeParams.id)
-		.success(function(response) {
-	    	$scope.event = response;
+		.then(function successCallback(response) {
+	    	$scope.event = response.data;
 	    	$scope.userParticipates = function(){
 				for (var i = 0; i < $scope.event.participants.length; i++) {
 			        if ($scope.event.participants[i]._id === $rootScope.currentUser._id)
@@ -89,9 +92,8 @@ app.controller('eventController', function($scope, $rootScope, $route, $routePar
 
 				return false;
 			};
-		})
-		.error(function(response) {
-        	console.log('error: ' + response);
+		}, function errorCallback(response) {
+        	console.log('error: ' + response.status);
         });
 
 	//add Comment
@@ -100,68 +102,62 @@ app.controller('eventController', function($scope, $rootScope, $route, $routePar
 
 	$scope.addComment = function(newComment){
 		$http.put('/api/event/' + $routeParams.id + '/comment', $scope.newComment)
-			.success(function(response) {
-		        console.log(response);
+			.then(function successCallback(response) {
+		        console.log(response.data);
 		        // reload route after adding a comment and set newComment back
 		        $route.reload();
 		        $scope.newComment = {body:'', createdBy:''};
-			})
-			.error(function(response) {
-	        	console.log('error: ' + response);
+			}, function errorCallback(response) {
+	        	console.log('error: ' + response.status);
 	        });
 	};
 
 	// Participate / Leave
 	$scope.joinEvent = function(){
 		$http.put('/api/event/' + $routeParams.id + '/join')
-			.success(function(response) {
-		        console.log(response);
+			.then(function successCallback(response) {
+		        console.log(response.data);
 		        // reload route after joining the event
 		        $route.reload();
-			})
-			.error(function(response) {
-	        	console.log('error: ' + response);
+			}, function errorCallback(response) {
+	        	console.log('error: ' + response.status);
 	        });
 	};
 
 	$scope.leaveEvent = function(){
 		$http.put('/api/event/' + $routeParams.id + '/leave')
-			.success(function(response) {
-		        console.log(response);
+			.then(function successCallback(response) {
+		        console.log(response.data);
 		        // reload route after leaving the event
 		        $route.reload();
-			})
-			.error(function(response) {
-	        	console.log('error: ' + response);
+			}, function errorCallback(response) {
+	        	console.log('error: ' + response.status);
 	        });
 	};
 });	
 
 app.controller('userController', function($http, $routeParams, $scope) {	
 	$http.get('/api/user/' + $routeParams.id)
-		.success(function(response) {
-	    	$scope.user = response;
-		})
-		.error(function(response) {
-        	console.log('error: ' + response);
+		.then(function successCallback(response) {
+	    	$scope.user = response.data;
+		}, function errorCallback(response) {
+        	console.log('error: ' + response.status);
         });
 });
 
 app.controller('userProfileController', function($http, $scope) {	
 	$http.get('/api/event/user/participated')
-		.success(function(response) {
-	    	$scope.eventsParticipated = response;
-		})
-		.error(function(response) {
-        	console.log('error: ' + response);
+		.then(function successCallback(response) {
+	    	$scope.eventsParticipated = response.data;
+		}, function errorCallback(response) {
+        	console.log('error: ' + response.status);
         });
 
     $http.get('/api/event/user/created')
-		.success(function(response) {
-	    	$scope.eventsCreated = response;
-		})
-		.error(function(response) {
-        	console.log('error: ' + response);
+		.then(function successCallback(response) {
+	    	$scope.eventsCreated = response.data;
+		}, function errorCallback(response) {
+        	console.log('error: ' + response.status);
         });
 });
 
@@ -169,11 +165,13 @@ app.controller('mapController', function(NgMap, NavigatorGeolocation, $scope) {
 	var vm = this;
 	vm.markerPos = "";
 
-	// Google Places location
+// NOTE: Places Marker and Radius not moving after update. Needs to be fixed.
 	vm.getPlacePos = function() {
 		vm.place = this.getPlace();
-		vm.map.setCenter(vm.place.geometry.location);
+		// alert(vm.place.geometry.location);
 		vm.markerPos = vm.place.geometry.location;
+		// alert(vm.markerPos);
+		vm.map.setCenter(vm.place.geometry.location);
 		$scope.newEvent.lat = $scope.query.lat = vm.place.geometry.location.lat();
 		$scope.newEvent.lng = $scope.query.lng = vm.place.geometry.location.lng();
 	};

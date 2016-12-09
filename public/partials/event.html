@@ -28,14 +28,14 @@
 			</p>
 			<p>{{event.body}}</p>
 			<p>
-				<a href="#/user/{{event.createdBy._id}}">
+				<a href="#!/user/{{event.createdBy._id}}">
 					<img ng-src="{{event.createdBy.picture}}" class="img-circle" width="18" height="18"> 
 					{{event.createdBy.username}}
 				</a>
 			</p>
 			Participants: 
 			<div ng-repeat="p in event.participants">
-				<a href="#/user/{{p._id}}">
+				<a href="#!/user/{{p._id}}">
 					<img ng-src="{{p.picture}}" class="img-circle" width="18" height="18"> 
 					{{p.username}}&nbsp;
 				</a>
@@ -66,12 +66,12 @@
 		<div ng-show="userParticipates() || isOwnEvent()">
 			<div class="media" ng-repeat="comment in event.comments" ng-class-odd="'odd'" ng-class-even="'even'" style="padding:5px;">
 				<div class="media-left">
-					<a href="#/user/{{comment.createdBy._id}}">
+					<a href="#!/user/{{comment.createdBy._id}}">
 						<img class="media-object" width="67" height="67" ng-src="{{comment.createdBy.picture}}" alt="...">
 					</a>
 				</div>
 				<div class="media-body">
-					<a href="#/user/{{comment.createdBy._id}}">
+					<a href="#!/user/{{comment.createdBy._id}}">
 						<h5 class="media-heading">{{comment.createdBy.username}}</h5>
 					</a>
 					<p>{{comment.body}}</p>
@@ -94,7 +94,7 @@
 </div>
 <!-- back button -->
 <div class="row col-sm-offset-2 col-sm-8 col-sm-offset-2">
-	<a href="#/event/" class="btn btn-default pull-right">
+	<a href="#!/event/" class="btn btn-default pull-right">
 		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
 		Back
 	</a>

@@ -1,4 +1,7 @@
+/* jshint node: true */
 'use strict';
+
+var pjson = require('./package.json');
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
@@ -19,6 +22,8 @@ var through = require('through2');
 var path = require('path');
 var cheerio = require('cheerio');
 var argv = require('yargs').argv;
+var replace = require('gulp-replace');
+var umd = require('gulp-umd');
 
 var bumpVersion = function(type) {
   type = type || 'patch';
@@ -50,6 +55,8 @@ gulp.task('clean', function() {
     .pipe(clean({force: true}));
 });
 
+var license = require('uglify-save-license');
+
 gulp.task('build-js', function() {
   return gulp.src([
       'app.js',
@@ -59,26 +66,55 @@ gulp.task('build-js', function() {
       'services/*.js'
     ])
     .pipe(concat('ng-map.debug.js'))
+    .pipe(replace(/(AngularJS Google Maps)/, '$1 Ver. ' + pjson.version))
     .pipe(gulp.dest('build/scripts'))
     .pipe(stripDebug())
     .pipe(concat('ng-map.js'))
+    .pipe(umd({
+        dependencies: function (file) {
+            return [{
+                name: 'angular',
+                amd: 'angular',
+                cjs: 'angular',
+                global: 'angular',
+                param: 'angular'
+            }];
+        },
+        exports: function (file) {
+            return "'ngMap'";
+        },
+        //template: umdTemplates.returnExportsNoNamespace.path,
+        templateSource: '(function(root, factory) {\r\n' +
+                            'if (typeof exports === "object") {\r\n' +
+                                'module.exports = factory(<%= cjs %>);\r\n' +
+                            '} else if (typeof define === "function" && define.amd) {\r\n' +
+                                'define(<%= amd %>, factory);\r\n' +
+                            '} else{\r\n' +
+                                'factory(<%= global %>);\r\n' +
+                            '}\r\n' +
+                        '}(this, function(<%= param %>) {\r\n' +
+                            '<%= contents %>\r\n' +
+                            'return <%= exports %>;\r\n' +
+                        '}));'
+    }))
     .pipe(gulp.dest('build/scripts'))
-    .pipe(uglify())
+    .pipe(uglify({preserveComments: license}))
     .pipe(rename('ng-map.min.js'))
     .pipe(gulp.dest('build/scripts'))
     .on('error', gutil.log);
 });
 
 gulp.task('docs', function() {
-  gulp.task('docs', shell.task([
-    'node_modules/jsdoc/jsdoc.js '+
-      '-c node_modules/angular-jsdoc/common/conf.json '+   // config file
-      '-t node_modules/angular-jsdoc/angular-template '+   // template file
-      '-d build/docs '+                           // output directory
-      './README.md ' +                            // to include README.md as index contents
-      '-r directives services'                    // source code directory
-  ]));
+ gulp.task('docs', shell.task([
+   'node_modules/jsdoc/jsdoc.js '+
+     '-c node_modules/angular-jsdoc/common/conf.json '+   // config file
+     '-t node_modules/angular-jsdoc/angular-template '+   // template file
+     '-d build/docs '+                           // output directory
+     './README.md ' +                            // to include README.md as index contents
+     '-r directives services'                    // source code directory
+ ]));
 });
+
 
 gulp.task('bump', function() { bumpVersion('patch'); });
 gulp.task('bump:patch', function() { bumpVersion('patch'); });
@@ -152,4 +188,3 @@ gulp.task('examples:json', function() {
     ))
     .pipe(gulp.dest('testapp'));
 });
-

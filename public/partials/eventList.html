@@ -6,9 +6,9 @@
 				<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
 				{{event.date | date:'MMM d, y, h:mm'}}
 			</h5>
-			<a href="#/event/{{event._id}}"> <h3>{{event.title}}</h3> </a>
+			<a href="#!/event/{{event._id}}"> <h3>{{event.title}}</h3> </a>
 			<small>
-				<a href="#/user/{{event.createdBy._id}}">
+				<a href="#!/user/{{event.createdBy._id}}">
 					<img ng-src="{{event.createdBy.picture}}" class="img-circle" width="18" height="18"> 
 					{{event.createdBy.username}}
 				</a>

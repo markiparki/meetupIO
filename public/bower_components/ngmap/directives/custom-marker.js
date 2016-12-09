@@ -69,9 +69,9 @@
       position && (this.position = position); /* jshint ignore:line */
 
       if (this.getProjection() && typeof this.position.lng == 'function') {
-        var posPixel = this.getProjection().fromLatLngToDivPixel(this.position);
         var _this = this;
         var setPosition = function() {
+          var posPixel = _this.getProjection().fromLatLngToDivPixel(_this.position);
           var x = Math.round(posPixel.x - (_this.el.offsetWidth/2));
           var y = Math.round(posPixel.y - _this.el.offsetHeight - 10); // 10px for anchor
           _this.el.style.left = x + "px";
@@ -90,6 +90,10 @@
     CustomMarker.prototype.setZIndex = function(zIndex) {
       zIndex && (this.zIndex = zIndex); /* jshint ignore:line */
       this.el.style.zIndex = this.zIndex;
+    };
+
+    CustomMarker.prototype.getVisible = function() {
+      return this.visible;
     };
 
     CustomMarker.prototype.setVisible = function(visible) {
@@ -145,9 +149,10 @@
       var customMarker = new CustomMarker(options);
 
       $timeout(function() { //apply contents, class, and location after it is compiled
+
         scope.$watch('[' + varsToWatch.join(',') + ']', function() {
           customMarker.setContent(orgHtml, scope);
-        });
+        }, true);
 
         customMarker.setContent(element[0].innerHTML, scope);
         var classNames = element[0].firstElementChild.className;
@@ -157,11 +162,12 @@
 
         if (!(options.position instanceof google.maps.LatLng)) {
           NgMap.getGeoLocation(options.position).then(
-            function(latlng) {
-              customMarker.setPosition(latlng);
-            }
+                function(latlng) {
+                  customMarker.setPosition(latlng);
+                }
           );
         }
+
       });
 
       console.log("custom-marker events", "events");
